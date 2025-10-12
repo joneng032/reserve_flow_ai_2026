@@ -17,8 +17,8 @@
 
 ### 💝 Support this Project
 
-[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/joneng032)
-[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?style=flat&logo=youtube)](https://www.youtube.com/@joneng032)
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](#)
+[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?style=flat&logo=youtube)](#)
 
 _If this template helps you, consider supporting my work! ☕_
 
