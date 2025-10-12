@@ -4,7 +4,7 @@
 
 <div align="center">
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/godie007/webapp-python)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/joneng032/reserve_flow_ai_2026)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -17,10 +17,10 @@
 
 ### 💝 Support this Project
 
-[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/godie007)
-[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?style=flat&logo=youtube)](https://www.youtube.com/@godie007)
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/joneng032)
+[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?style=flat&logo=youtube)](https://www.youtube.com/@joneng032)
 
-*If this template helps you, consider supporting my work! ☕*
+_If this template helps you, consider supporting my work! ☕_
 
 </div>
 
@@ -56,6 +56,7 @@
 ## ✨ Key Features
 
 ### 🎨 **Advanced Frontend**
+
 - ⚛️ **React 18** with TypeScript for robust development
 - 🎨 **Professional Design System** with Tailwind CSS
 - 📱 **Responsive Design** optimized for all devices
@@ -65,6 +66,7 @@
 - 🎭 **Smooth Animations** and transitions
 
 ### 🔧 **Robust Backend**
+
 - ⚡ **FastAPI** for high-performance APIs
 - 🔐 **Complete JWT Authentication** and secure
 - 📊 **Data Validation** with Pydantic
@@ -73,6 +75,7 @@
 - 🧪 **Testing** with pytest
 
 ### 🚀 **Deployment and DevOps**
+
 - ☁️ **Vercel** for automatic deployment
 - 🔄 **CI/CD** integrated
 - 📊 **Monitoring** and analytics
@@ -107,48 +110,54 @@
 ## 🛠️ Technology Stack
 
 ### **Frontend**
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=flat&logo=react) | 18.2.0 | UI Framework |
-| ![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-3178C6?style=flat&logo=typescript) | 5.0.0 | Static typing |
-| ![Vite](https://img.shields.io/badge/Vite-4.4.0-646CFF?style=flat&logo=vite) | 4.4.0 | Build tool |
-| ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3.0-38B2AC?style=flat&logo=tailwind-css) | 3.3.0 | CSS Framework |
-| ![React Router](https://img.shields.io/badge/React_Router-6.8.0-CA4245?style=flat&logo=react-router) | 6.8.0 | Routing |
-| ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-7.43.0-EC5990?style=flat) | 7.43.0 | Form handling |
+
+| Technology                                                                                           | Version | Purpose       |
+| ---------------------------------------------------------------------------------------------------- | ------- | ------------- |
+| ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=flat&logo=react)                     | 18.2.0  | UI Framework  |
+| ![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-3178C6?style=flat&logo=typescript)       | 5.0.0   | Static typing |
+| ![Vite](https://img.shields.io/badge/Vite-4.4.0-646CFF?style=flat&logo=vite)                         | 4.4.0   | Build tool    |
+| ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3.0-38B2AC?style=flat&logo=tailwind-css)     | 3.3.0   | CSS Framework |
+| ![React Router](https://img.shields.io/badge/React_Router-6.8.0-CA4245?style=flat&logo=react-router) | 6.8.0   | Routing       |
+| ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-7.43.0-EC5990?style=flat)            | 7.43.0  | Form handling |
 
 ### **Backend**
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat&logo=python) | 3.9+ | Main language |
-| ![FastAPI](https://img.shields.io/badge/FastAPI-0.100.0-009688?style=flat&logo=fastapi) | 0.100.0 | Web framework |
-| ![Uvicorn](https://img.shields.io/badge/Uvicorn-0.23.0-499848?style=flat) | 0.23.0 | ASGI server |
-| ![Pydantic](https://img.shields.io/badge/Pydantic-2.0.0-E92063?style=flat) | 2.0.0 | Data validation |
-| ![PyJWT](https://img.shields.io/badge/PyJWT-2.8.0-000000?style=flat) | 2.8.0 | JWT authentication |
-| ![python-dotenv](https://img.shields.io/badge/python--dotenv-1.0.0-000000?style=flat) | 1.0.0 | Environment variables |
+
+| Technology                                                                              | Version | Purpose               |
+| --------------------------------------------------------------------------------------- | ------- | --------------------- |
+| ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat&logo=python)       | 3.9+    | Main language         |
+| ![FastAPI](https://img.shields.io/badge/FastAPI-0.100.0-009688?style=flat&logo=fastapi) | 0.100.0 | Web framework         |
+| ![Uvicorn](https://img.shields.io/badge/Uvicorn-0.23.0-499848?style=flat)               | 0.23.0  | ASGI server           |
+| ![Pydantic](https://img.shields.io/badge/Pydantic-2.0.0-E92063?style=flat)              | 2.0.0   | Data validation       |
+| ![PyJWT](https://img.shields.io/badge/PyJWT-2.8.0-000000?style=flat)                    | 2.8.0   | JWT authentication    |
+| ![python-dotenv](https://img.shields.io/badge/python--dotenv-1.0.0-000000?style=flat)   | 1.0.0   | Environment variables |
 
 ### **Infrastructure**
-| Technology | Purpose |
-|------------|---------|
-| ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white) | Deployment and hosting |
-| ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white) | Database and auth |
-| ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white) | Version control |
+
+| Technology                                                                                         | Purpose                |
+| -------------------------------------------------------------------------------------------------- | ---------------------- |
+| ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)       | Deployment and hosting |
+| ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white) | Database and auth      |
+| ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)       | Version control        |
 
 ## 🚀 Quick Start
 
 ### **Prerequisites**
-- Node.js 18+ 
+
+- Node.js 18+
 - Python 3.9+
 - Git
 - Vercel account
 - Supabase account
 
 ### **1. Clone the Repository**
+
 ```bash
-git clone https://github.com/godie007/webapp-python.git
-cd webapp-python
+git clone https://github.com/joneng032/reserve_flow_ai_2026.git
+cd reserve_flow_ai_2026
 ```
 
 ### **2. Configure Environment Variables**
+
 ```bash
 # Copy example files
 cp backend/env.example backend/.env
@@ -160,6 +169,7 @@ DATABASE_URL=your_supabase_url
 ```
 
 ### **3. Install Dependencies**
+
 ```bash
 # Frontend
 cd frontend
@@ -171,6 +181,7 @@ pip install -r requirements.txt
 ```
 
 ### **4. Run in Development**
+
 ```bash
 # Terminal 1 - Backend
 cd backend
@@ -182,6 +193,7 @@ npm run dev
 ```
 
 ### **5. Deploy to Vercel**
+
 ```bash
 # From project root
 npx vercel --prod
@@ -221,6 +233,7 @@ webapp-python/
 ## 🎨 Design System
 
 ### **Color Palette**
+
 ```css
 /* Primary Colors */
 --primary-50: #eff6ff;
@@ -239,6 +252,7 @@ webapp-python/
 ```
 
 ### **Available Components**
+
 - **Panels**: `.panel`, `.panel-elevated`, `.panel-glass`
 - **Cards**: `.card`, `.card-elevated`, `.card-glass`
 - **Forms**: `.form-group`, `.form-label`, `.form-input`
@@ -250,6 +264,7 @@ webapp-python/
 ### **Environment Variables**
 
 #### **Backend (.env)**
+
 ```env
 # JWT Configuration
 JWT_SECRET=your_super_secure_jwt_secret
@@ -268,6 +283,7 @@ DEBUG=true
 ```
 
 #### **Frontend (.env)**
+
 ```env
 # API Configuration
 VITE_API_BASE_URL=http://localhost:3000/api
@@ -282,11 +298,13 @@ VITE_ENVIRONMENT=development
 ### **Automatic Deployment with Vercel**
 
 1. **Connect with GitHub**
+
    - Go to [Vercel Dashboard](https://vercel.com/dashboard)
    - Import your GitHub repository
    - Vercel will automatically detect the configuration
 
 2. **Configure Environment Variables**
+
    ```bash
    # In Vercel Dashboard > Settings > Environment Variables
    JWT_SECRET=your_production_jwt_secret
@@ -299,6 +317,7 @@ VITE_ENVIRONMENT=development
    ```
 
 ### **Deployment URLs**
+
 - **Frontend**: https://your-app.vercel.app
 - **API**: https://your-app.vercel.app/api
 - **Documentation**: https://your-app.vercel.app/docs
@@ -306,6 +325,7 @@ VITE_ENVIRONMENT=development
 ## 🧪 Testing
 
 ### **Frontend Testing**
+
 ```bash
 cd frontend
 npm run test
@@ -313,6 +333,7 @@ npm run test:coverage
 ```
 
 ### **Backend Testing**
+
 ```bash
 cd backend
 pytest
@@ -320,6 +341,7 @@ pytest --cov=app
 ```
 
 ### **E2E Testing**
+
 ```bash
 npm run test:e2e
 ```
@@ -327,6 +349,7 @@ npm run test:e2e
 ## 📚 Documentation
 
 ### **Available Guides**
+
 - 📖 [Developer Guide](./docs/DEVELOPER_GUIDE.md)
 - 🚀 [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
 - 🎨 [Design System](./docs/DESIGN_SYSTEM.md)
@@ -334,6 +357,7 @@ npm run test:e2e
 - 📊 [API Documentation](./docs/API_DOCS.md)
 
 ### **Useful Commands**
+
 ```bash
 # Development
 npm run dev          # Frontend development
@@ -366,6 +390,7 @@ npm run type-check   # TypeScript check
 5. **Open a Pull Request**
 
 ### **Code Standards**
+
 - ✅ **TypeScript** for all frontend code
 - ✅ **ESLint + Prettier** for formatting
 - ✅ **Conventional Commits** for messages
@@ -373,6 +398,7 @@ npm run type-check   # TypeScript check
 - ✅ **Documentation** updated
 
 ### **Commit Structure**
+
 ```
 feat: add user authentication
 fix: resolve CORS issue
@@ -398,14 +424,14 @@ If this template has been helpful, please consider:
 
 ### 💖 Support the Project
 
-[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/godie007)
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/joneng032)
 
-**Learn more:** Subscribe to my [YouTube Channel](https://www.youtube.com/@godie007) for web development tutorials
+**Learn more:** Subscribe to my [YouTube Channel](https://www.youtube.com/@joneng032) for web development tutorials
 
 ---
 
-**Developed with ❤️ by [@godie007](https://github.com/godie007)**
+**Developed with ❤️ by [@joneng032](https://github.com/joneng032)**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/godie007/webapp-python)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/joneng032/reserve_flow_ai_2026)
 
 </div>

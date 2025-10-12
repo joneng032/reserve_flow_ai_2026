@@ -1,0 +1,144 @@
+repos:
+  # General housekeeping
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        name: Remove trailing whitespace
+        description: Remove trailing whitespace from all files
+      - id: end-of-file-fixer
+        name: Fix end of files
+        description: Ensure files end with a single newline
+      - id: check-yaml
+        name: Check YAML syntax
+        description: Validate YAML file syntax
+      - id: check-added-large-files
+        name: Check for large files
+        description: Prevent accidentally committing large files
+        args: ['--maxkb=500']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+        description: Prevent committing files with merge conflict markers
+      - id: check-case-conflict
+        name: Check case conflicts
+        description: Check for files with names that would conflict on case-insensitive filesystems
+      - id: mixed-line-ending
+        name: Fix mixed line endings
+        description: Normalize line endings to LF
+
+  # Python formatting and linting
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        name: Format Python code with Black
+        description: Format Python code using Black formatter
+        language_version: python3
+        args: [--line-length=88]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: Sort Python imports
+        description: Sort Python imports using isort
+        args: [--profile=black, --line-length=88]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        name: Check Python code style
+        description: Check Python code style with flake8
+        args: [--max-line-length=88, --extend-ignore=E203,W503]
+        exclude: ^(venv|env|node_modules)/
+
+  # JavaScript/TypeScript formatting and linting
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.50.0
+    hooks:
+      - id: eslint
+        name: Run ESLint
+        description: Run ESLint for JavaScript/TypeScript files
+        types: [file]
+        files: \.(js|ts|tsx)$
+        additional_dependencies:
+          - eslint@^8.50.0
+          - "@typescript-eslint/parser@^6.7.0"
+          - "@typescript-eslint/eslint-plugin@^6.7.0"
+          - eslint-plugin-react@^7.33.0
+          - eslint-plugin-react-hooks@^4.6.0
+        args: [--fix]
+
+  # Prettier for consistent formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.3
+    hooks:
+      - id: prettier
+        name: Format code with Prettier
+        description: Format code with Prettier
+        types_or: [javascript, jsx, ts, tsx, json, css, html, markdown]
+        exclude: package-lock.json
+
+  # Security checks
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.2
+    hooks:
+      - id: python-safety-dependencies-check
+        name: Check Python dependencies for security issues
+        description: Check Python dependencies for known security vulnerabilities
+        files: requirements\.txt$
+        args: [--ignore=12345]  # Add specific vulnerability IDs to ignore if needed
+
+  # Local hooks for project-specific checks
+  - repo: local
+    hooks:
+      - id: check-migration-readme
+        name: Validate migration documentation
+        description: Ensure migration README is properly formatted
+        entry: pwsh
+        language: system
+        files: MIGRATION_README\.md$
+        pass_filenames: false
+        args: [-Command, "if (!(Select-String -Path MIGRATION_README.md -Pattern 'Migration completed by AI Assistant')) { throw 'Migration README validation failed' }"]
+
+      - id: check-functional-requirements
+        name: Validate functional requirements
+        description: Ensure functional requirements document exists and is valid
+        entry: pwsh
+        language: system
+        files: FUNCTIONAL_REQUIREMENTS\.md$
+        pass_filenames: false
+        args: [-Command, "if (!(Test-Path FUNCTIONAL_REQUIREMENTS.md)) { throw 'Functional requirements document missing' }"]
+
+      - id: validate-package-json
+        name: Validate package.json
+        description: Ensure package.json is valid JSON
+        entry: node
+        language: system
+        files: package\.json$
+        pass_filenames: false
+        args: [-e, "JSON.parse(require('fs').readFileSync('package.json', 'utf8')); console.log('package.json is valid');"]
+
+# Configuration for commit message validation
+cicommit:
+  # Conventional commit format
+  types:
+    - build
+    - chore
+    - ci
+    - docs
+    - feat
+    - fix
+    - perf
+    - refactor
+    - revert
+    - style
+    - test
+  # Require scope for certain types
+  require-scope:
+    - feat
+    - fix
+    - refactor
+  # Max line length for commit messages
+  max-length: 72

@@ -6,4 +6,8 @@ passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 pydantic-settings==2.0.3
 supabase==2.3.4
-pydantic[email]==2.5.3 
+# Optional: newer auth package to replace 'gotrue' usage in the future
+# This is not required for current local development; CI/upgrade branch can
+# enable and test migration to `supabase_auth`.
+# supabase_auth==0.0.1  # Uncomment and pin when migrating
+pydantic[email]==2.5.3

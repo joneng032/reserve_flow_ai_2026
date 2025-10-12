@@ -20,9 +20,11 @@ The webapp API is built with **FastAPI** and provides authentication and user ma
 ### **Application Interface**
 
 #### **Main Application**
+
 ![Home Page Interface](images/homePage.png)
 
 #### **Authentication Interface**
+
 ![Login Form](images/login.png)
 ![Registration Form](images/register.png)
 
@@ -46,16 +48,19 @@ The webapp API is built with **FastAPI** and provides authentication and user ma
 ## Base URL
 
 ### Development
+
 ```
 http://localhost:3000
 ```
 
 ### Production
+
 ```
 https://your-app.vercel.app
 ```
 
 ### API Documentation
+
 ```
 http://localhost:3000/docs  # Swagger UI
 http://localhost:3000/redoc # ReDoc
@@ -66,11 +71,13 @@ http://localhost:3000/redoc # ReDoc
 The API uses **JWT (JSON Web Tokens)** for authentication. All protected endpoints require a valid JWT token in the Authorization header.
 
 ### Token Format
+
 ```
 Authorization: Bearer <jwt_token>
 ```
 
 ### Token Configuration
+
 - **Algorithm:** HS256
 - **Expiration:** 30 minutes (configurable)
 - **Secret Key:** Set via `JWT_SECRET_KEY` environment variable
@@ -86,67 +93,74 @@ Authorization: Bearer <jwt_token>
 ### Request Models
 
 #### LoginRequest
+
 ```typescript
 {
-  email: string;      // User's email address
-  password: string;   // User's password
+  email: string; // User's email address
+  password: string; // User's password
 }
 ```
 
 #### RegisterRequest
+
 ```typescript
 {
-  email: string;      // User's email address (validated)
-  password: string;   // User's password
-  username: string;   // User's display name
+  email: string; // User's email address (validated)
+  password: string; // User's password
+  username: string; // User's display name
 }
 ```
 
 ### Response Models
 
 #### LoginResponse
+
 ```typescript
 {
-  access_token: string;  // JWT token for authentication
-  token_type: string;    // Always "bearer"
-  user: User;           // User information
+  access_token: string; // JWT token for authentication
+  token_type: string; // Always "bearer"
+  user: User; // User information
 }
 ```
 
 #### RegisterResponse
+
 ```typescript
 {
-  access_token: string;  // JWT token for authentication
-  token_type: string;    // Always "bearer"
-  user: User;           // User information
-  message: string;      // Success message
+  access_token: string; // JWT token for authentication
+  token_type: string; // Always "bearer"
+  user: User; // User information
+  message: string; // Success message
 }
 ```
 
 #### ProtectedResponse
+
 ```typescript
 {
-  message: string;      // Personalized message
-  user_info: User;     // Current user information
+  message: string; // Personalized message
+  user_info: User; // Current user information
 }
 ```
 
 #### User
+
 ```typescript
 {
-  id: string;           // User ID
-  username: string;     // Display name
-  email: string;        // Email address
-  is_active: boolean;   // Account status
+  id: string; // User ID
+  username: string; // Display name
+  email: string; // Email address
+  is_active: boolean; // Account status
 }
 ```
 
 #### HealthResponse
+
 ```typescript
 {
-  status: string;       // "ok"
-  message: string;      // Status message
-  auth_mode: string;    // "JWT"
+  status: string; // "ok"
+  message: string; // Status message
+  auth_mode: string; // "JWT"
   debug: {
     users_registered: number;
     framework: string;
@@ -161,6 +175,7 @@ Authorization: Bearer <jwt_token>
 ### Public Endpoints
 
 #### 1. Root Endpoint
+
 ```
 GET /
 ```
@@ -168,15 +183,17 @@ GET /
 **Description:** API information and documentation links
 
 **Response:**
+
 ```json
 {
-  "message": "API de Autenticación con JWT",
+  "message": "Authentication API with JWT",
   "version": "1.0.0",
   "documentation": "/docs"
 }
 ```
 
 #### 2. Health Check
+
 ```
 GET /api/health
 ```
@@ -184,10 +201,11 @@ GET /api/health
 **Description:** Check API status and configuration
 
 **Response:**
+
 ```json
 {
   "status": "ok",
-  "message": "API funcionando correctamente con JWT",
+  "message": "API working correctly with JWT",
   "auth_mode": "JWT",
   "debug": {
     "users_registered": 0,
@@ -199,6 +217,7 @@ GET /api/health
 ```
 
 #### 3. Test Endpoint
+
 ```
 GET /api/test
 ```
@@ -206,15 +225,17 @@ GET /api/test
 **Description:** Simple test endpoint
 
 **Response:**
+
 ```json
 {
-  "message": "Endpoint de prueba funcionando"
+  "message": "Test endpoint working"
 }
 ```
 
 ### Authentication Endpoints
 
 #### 4. User Registration
+
 ```
 POST /api/register
 ```
@@ -222,6 +243,7 @@ POST /api/register
 **Description:** Register a new user account
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -231,6 +253,7 @@ POST /api/register
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -246,10 +269,12 @@ POST /api/register
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Invalid email format
 - `409 Conflict` - User already exists
 
 #### 5. User Login
+
 ```
 POST /api/login
 ```
@@ -257,6 +282,7 @@ POST /api/login
 **Description:** Authenticate existing user
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -265,6 +291,7 @@ POST /api/login
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -279,6 +306,7 @@ POST /api/login
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - Invalid credentials
 
 ### Protected Endpoints
@@ -286,6 +314,7 @@ POST /api/login
 All protected endpoints require a valid JWT token in the Authorization header.
 
 #### 6. Protected Data
+
 ```
 GET /api/protected
 ```
@@ -293,11 +322,13 @@ GET /api/protected
 **Description:** Get personalized protected data
 
 **Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Hola johndoe, has accedido a datos protegidos",
@@ -311,10 +342,12 @@ Authorization: Bearer <jwt_token>
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - Invalid or missing token
 - `403 Forbidden` - Token expired
 
 #### 7. Get Users
+
 ```
 GET /api/users
 ```
@@ -322,11 +355,13 @@ GET /api/users
 **Description:** Get list of users (currently returns current user only)
 
 **Headers:**
+
 ```
 Authorization: Bearer <jwt_token>
 ```
 
 **Response:**
+
 ```json
 {
   "users": [
@@ -341,6 +376,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - Invalid or missing token
 - `500 Internal Server Error` - Server error
 
@@ -348,17 +384,17 @@ Authorization: Bearer <jwt_token>
 
 ### HTTP Status Codes
 
-| Code | Description |
-|------|-------------|
-| 200 | OK - Request successful |
-| 201 | Created - Resource created successfully |
-| 400 | Bad Request - Invalid request data |
-| 401 | Unauthorized - Invalid or missing authentication |
-| 403 | Forbidden - Valid token but insufficient permissions |
-| 404 | Not Found - Resource not found |
-| 409 | Conflict - Resource already exists |
-| 422 | Unprocessable Entity - Validation error |
-| 500 | Internal Server Error - Server error |
+| Code | Description                                          |
+| ---- | ---------------------------------------------------- |
+| 200  | OK - Request successful                              |
+| 201  | Created - Resource created successfully              |
+| 400  | Bad Request - Invalid request data                   |
+| 401  | Unauthorized - Invalid or missing authentication     |
+| 403  | Forbidden - Valid token but insufficient permissions |
+| 404  | Not Found - Resource not found                       |
+| 409  | Conflict - Resource already exists                   |
+| 422  | Unprocessable Entity - Validation error              |
+| 500  | Internal Server Error - Server error                 |
 
 ### Error Response Format
 
@@ -380,6 +416,7 @@ Authorization: Bearer <jwt_token>
 ### Complete Authentication Flow
 
 #### 1. Register a new user
+
 ```bash
 curl -X POST "http://localhost:3000/api/register" \
   -H "Content-Type: application/json" \
@@ -391,6 +428,7 @@ curl -X POST "http://localhost:3000/api/register" \
 ```
 
 #### 2. Login with credentials
+
 ```bash
 curl -X POST "http://localhost:3000/api/login" \
   -H "Content-Type: application/json" \
@@ -401,6 +439,7 @@ curl -X POST "http://localhost:3000/api/login" \
 ```
 
 #### 3. Access protected endpoint
+
 ```bash
 curl -X GET "http://localhost:3000/api/protected" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -409,57 +448,59 @@ curl -X GET "http://localhost:3000/api/protected" \
 ### JavaScript/TypeScript Examples
 
 #### Using Fetch API
+
 ```javascript
 // Register
 const registerUser = async (userData) => {
-  const response = await fetch('http://localhost:3000/api/register', {
-    method: 'POST',
+  const response = await fetch("http://localhost:3000/api/register", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(userData)
+    body: JSON.stringify(userData),
   });
   return response.json();
 };
 
 // Login
 const loginUser = async (credentials) => {
-  const response = await fetch('http://localhost:3000/api/login', {
-    method: 'POST',
+  const response = await fetch("http://localhost:3000/api/login", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(credentials)
+    body: JSON.stringify(credentials),
   });
   return response.json();
 };
 
 // Access protected endpoint
 const getProtectedData = async (token) => {
-  const response = await fetch('http://localhost:3000/api/protected', {
-    method: 'GET',
+  const response = await fetch("http://localhost:3000/api/protected", {
+    method: "GET",
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   return response.json();
 };
 ```
 
 #### Using Axios
+
 ```javascript
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: "http://localhost:3000/api",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -468,19 +509,19 @@ api.interceptors.request.use((config) => {
 
 // Register
 const register = async (userData) => {
-  const response = await api.post('/register', userData);
+  const response = await api.post("/register", userData);
   return response.data;
 };
 
 // Login
 const login = async (credentials) => {
-  const response = await api.post('/login', credentials);
+  const response = await api.post("/login", credentials);
   return response.data;
 };
 
 // Get protected data
 const getProtectedData = async () => {
-  const response = await api.get('/protected');
+  const response = await api.get("/protected");
   return response.data;
 };
 ```
@@ -490,12 +531,14 @@ const getProtectedData = async () => {
 ### Manual Testing
 
 1. **Start the server:**
+
 ```bash
 cd backend
 python main.py
 ```
 
 2. **Access Swagger UI:**
+
 ```
 http://localhost:3000/docs
 ```
@@ -505,6 +548,7 @@ http://localhost:3000/docs
 ### Automated Testing
 
 #### Using curl
+
 ```bash
 # Health check
 curl http://localhost:3000/api/health
@@ -545,12 +589,12 @@ For development testing, you can use these hardcoded credentials:
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `JWT_SECRET_KEY` | Secret key for JWT tokens | `"your-secret-key-change-in-production"` |
-| `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | Token expiration time | `30` |
-| `HOST` | Server host | `"0.0.0.0"` |
-| `PORT` | Server port | `3000` |
+| Variable                          | Description               | Default                                  |
+| --------------------------------- | ------------------------- | ---------------------------------------- |
+| `JWT_SECRET_KEY`                  | Secret key for JWT tokens | `"your-secret-key-change-in-production"` |
+| `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | Token expiration time     | `30`                                     |
+| `HOST`                            | Server host               | `"0.0.0.0"`                              |
+| `PORT`                            | Server port               | `3000`                                   |
 
 ### CORS Configuration
 
@@ -568,17 +612,20 @@ The API is configured to allow requests from:
 ## Security Considerations
 
 ### JWT Security
+
 - Use a strong, unique `JWT_SECRET_KEY`
 - Set appropriate token expiration times
 - Validate tokens on every protected request
 - Store tokens securely (localStorage for SPA, httpOnly cookies for better security)
 
 ### CORS Security
+
 - Configure specific origins in production
 - Remove wildcard `"*"` in production
 - Use HTTPS in production
 
 ### Input Validation
+
 - All inputs are validated using Pydantic models
 - Email addresses are validated for correct format
 - Passwords should meet security requirements (implement in production)
@@ -594,9 +641,11 @@ Currently, the API does not implement rate limiting. For production, consider im
 ## Monitoring and Logging
 
 ### Health Check
+
 Use the `/api/health` endpoint to monitor API status.
 
 ### Logging
+
 The API includes debug logging for authentication requests. Enable detailed logging for troubleshooting.
 
 ## Future Enhancements
@@ -614,7 +663,7 @@ The API includes debug logging for authentication requests. Enable detailed logg
 
 ---
 
-**API Version:** 1.0.0  
-**Last Updated:** December 2024  
-**Framework:** FastAPI  
-**Authentication:** JWT 
+**API Version:** 1.0.0
+**Last Updated:** December 2024
+**Framework:** FastAPI
+**Authentication:** JWT

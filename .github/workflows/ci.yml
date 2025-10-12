@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+        os: [ubuntu-latest, windows-latest]
+        use_simple_jwt: ["1", ""]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Install pytest-cov in CI to allow coverage enforcement
+          pip install pytest-cov
+      - name: Run tests with coverage enforcement
+        env:
+          USE_SIMPLE_JWT: ${{ matrix.use_simple_jwt }}
+        run: |
+          python -m pytest backend/tests -q --cov=backend --cov-fail-under=80
