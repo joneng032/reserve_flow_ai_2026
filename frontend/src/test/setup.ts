@@ -39,3 +39,11 @@ global.IntersectionObserver = class IntersectionObserver {
   unobserve() {}
   disconnect() {}
 };
+
+// Provide a no-op window.alert implementation to avoid jsdom "Not implemented"
+// errors in tests that call alert(). This keeps tests deterministic and avoids
+// noisy console errors when components surface user-facing alerts.
+Object.defineProperty(window, "alert", {
+  value: (/* msg?: any */) => undefined,
+  writable: true,
+});

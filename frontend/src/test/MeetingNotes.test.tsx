@@ -214,7 +214,7 @@ describe("MeetingNotes", () => {
 
     const mockOnSave = vi.fn();
 
-    render(
+    const { container } = render(
       <BrowserRouter>
         <MeetingNotes
           projectId="test-project-id"
@@ -226,7 +226,10 @@ describe("MeetingNotes", () => {
 
     // Fill required fields
     const titleInput = screen.getByPlaceholderText("Enter meeting title");
-    const dateInput = screen.getByDisplayValue("2025-10-11"); // Default date value
+    const dateInput = container.querySelector(
+      'input[type="date"]',
+    ) as HTMLInputElement;
+    expect(dateInput).not.toBeNull();
 
     fireEvent.change(titleInput, { target: { value: "New Meeting" } });
     fireEvent.change(dateInput, { target: { value: "2024-01-15" } });

@@ -1,22 +1,30 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { apiService } from '../services/api';
-import type { LoginRequest } from '../types/api';
-import { showToast } from './Toast';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { apiService } from "../services/api";
+import type { LoginRequest } from "../types/api";
+import { showToast } from "./Toast";
 
-const schema = yup.object({
-  email: yup.string().email('Email inválido').required('El email es requerido'),
-  password: yup.string().required('La contraseña es requerida'),
-}).required();
+const schema = yup
+  .object({
+    email: yup
+      .string()
+      .email("Email inválido")
+      .required("El email es requerido"),
+    password: yup.string().required("La contraseña es requerida"),
+  })
+  .required();
 
 interface LoginFormProps {
   onLoginSuccess: (token: string) => void;
   onSwitchToRegister: () => void;
 }
 
-export const LoginForm = ({ onLoginSuccess, onSwitchToRegister }: LoginFormProps) => {
+export const LoginForm = ({
+  onLoginSuccess,
+  onSwitchToRegister,
+}: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,11 +42,18 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToRegister }: LoginFormProps
 
     try {
       const response = await apiService.login(data);
-      localStorage.setItem('token', response.access_token);
-      showToast.success('¡Bienvenido! Sesión iniciada correctamente');
+      localStorage.setItem("token", response.access_token);
+      showToast.success("¡Bienvenido! Sesión iniciada correctamente");
       onLoginSuccess(response.access_token);
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || 'Error al iniciar sesión';
+    } catch (err: unknown) {
+      let errorMessage = "Error al iniciar sesión";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "object" && err !== null && "response" in err) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const e = err as any;
+        errorMessage = e?.response?.data?.detail ?? errorMessage;
+      }
       setError(errorMessage);
       showToast.error(errorMessage);
     } finally {
@@ -61,7 +76,7 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToRegister }: LoginFormProps
               </p>
             </div>
           </div>
-          
+
           {/* Formulario con mejor estructura */}
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-4">
@@ -71,7 +86,7 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToRegister }: LoginFormProps
                   Correo electrónico
                 </label>
                 <input
-                  {...register('email')}
+                  {...register("email")}
                   type="email"
                   className="form-input"
                   placeholder="tu@email.com"
@@ -91,7 +106,7 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToRegister }: LoginFormProps
                   Contraseña
                 </label>
                 <input
-                  {...register('password')}
+                  {...register("password")}
                   type="password"
                   className="form-input"
                   placeholder="Ingresa tu contraseña"
@@ -136,7 +151,7 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToRegister }: LoginFormProps
 
               <div className="text-center pt-4 border-t border-secondary-600/30">
                 <p className="text-body text-secondary-400 responsive-text">
-                  ¿No tienes cuenta?{' '}
+                  ¿No tienes cuenta?{" "}
                   <button
                     type="button"
                     onClick={onSwitchToRegister}
@@ -152,4 +167,4 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToRegister }: LoginFormProps
       </div>
     </div>
   );
-}; 
+};

@@ -1,14 +1,8 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useId } from "react";
 import { apiService } from "../services/api";
-import type {
-  Project,
-  Component,
-  CostAnalysis,
-  ReserveAnalysis,
-} from "../services/api";
+import type { Project } from "../types/api";
 
-interface ProjectFormData {
+export interface ProjectFormData {
   name: string;
   client_name: string;
   client_contact_name?: string;
@@ -23,7 +17,7 @@ interface ProjectFormData {
   target_funding_percentage?: number;
   project_status?: string;
   project_description?: string;
-  custom_fields: Record<string, any>;
+  custom_fields: Record<string, unknown>;
 }
 
 interface Client {
@@ -73,6 +67,8 @@ function ProjectForm({
   onSave: (data: ProjectFormData) => Promise<void>;
   onCancel: () => void;
 }) {
+  const id = useId();
+
   const [formData, setFormData] = useState<ProjectFormData>({
     name: project?.name || "",
     client_name: project?.client_name || "",
@@ -93,7 +89,7 @@ function ProjectForm({
 
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
-  const [showNewClientForm, setShowNewClientForm] = useState(false);
+  // New client creation not implemented yet; removing unused state
 
   useEffect(() => {
     loadClients();
@@ -170,25 +166,34 @@ function ProjectForm({
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-name`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Project Name *
               </label>
               <input
+                id={`${id}-name`}
                 type="text"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, name: e.target.value }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Project name"
                 required
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-project-description`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Project Description
               </label>
               <textarea
+                id={`${id}-project-description`}
                 value={formData.project_description}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -203,10 +208,14 @@ function ProjectForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-project-status`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Project Status
               </label>
               <select
+                id={`${id}-project-status`}
                 value={formData.project_status}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -215,6 +224,7 @@ function ProjectForm({
                   }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Project status"
               >
                 {PROJECT_STATUSES.map((status) => (
                   <option key={status} value={status}>
@@ -225,10 +235,14 @@ function ProjectForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-target-funding`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Target Funding Percentage
               </label>
               <input
+                id={`${id}-target-funding`}
                 type="number"
                 value={formData.target_funding_percentage}
                 onChange={(e) =>
@@ -239,6 +253,7 @@ function ProjectForm({
                   }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Target %"
                 min="0"
                 max="200"
                 step="1"
@@ -254,10 +269,15 @@ function ProjectForm({
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-client-name`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Client Name *
               </label>
               <select
+                id={`${id}-client-select`}
+                aria-label="Select existing client"
                 value={formData.client_name}
                 onChange={(e) => handleClientSelect(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -270,6 +290,7 @@ function ProjectForm({
                 ))}
               </select>
               <input
+                id={`${id}-client-name`}
                 type="text"
                 value={formData.client_name}
                 onChange={(e) =>
@@ -285,10 +306,14 @@ function ProjectForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-client-contact`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Contact Name
               </label>
               <input
+                id={`${id}-client-contact`}
                 type="text"
                 value={formData.client_contact_name}
                 onChange={(e) =>
@@ -303,10 +328,14 @@ function ProjectForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-client-email`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email
               </label>
               <input
+                id={`${id}-client-email`}
                 type="email"
                 value={formData.client_email}
                 onChange={(e) =>
@@ -316,14 +345,19 @@ function ProjectForm({
                   }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="client@example.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-client-phone`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Phone
               </label>
               <input
+                id={`${id}-client-phone`}
                 type="tel"
                 value={formData.client_phone}
                 onChange={(e) =>
@@ -333,6 +367,7 @@ function ProjectForm({
                   }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="555-555-5555"
               />
             </div>
           </div>
@@ -345,25 +380,35 @@ function ProjectForm({
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-address`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Property Address *
               </label>
               <input
+                id={`${id}-address`}
                 type="text"
                 value={formData.address}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, address: e.target.value }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Street address, city, state"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-property-type`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Property Type
               </label>
               <select
+                id={`${id}-property-type`}
+                aria-label="Property type"
                 value={formData.property_type}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -382,10 +427,15 @@ function ProjectForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-ownership-structure`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Ownership Structure
               </label>
               <select
+                id={`${id}-ownership-structure`}
+                aria-label="Ownership structure"
                 value={formData.ownership_structure}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -409,6 +459,7 @@ function ProjectForm({
               </label>
               <div className="flex space-x-2">
                 <input
+                  id={`${id}-property-size`}
                   type="number"
                   value={formData.property_size || ""}
                   onChange={(e) =>
@@ -420,8 +471,11 @@ function ProjectForm({
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min="0"
                   step="0.01"
+                  placeholder="Size"
                 />
                 <select
+                  id={`${id}-property-size-unit`}
+                  aria-label="Property size unit"
                   value={formData.property_size_unit}
                   onChange={(e) =>
                     setFormData((prev) => ({
@@ -447,12 +501,16 @@ function ProjectForm({
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-reserve-balance`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Current Reserve Balance *
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 text-gray-500">$</span>
                 <input
+                  id={`${id}-reserve-balance`}
                   type="number"
                   value={formData.current_reserve_balance}
                   onChange={(e) =>
@@ -464,6 +522,7 @@ function ProjectForm({
                   className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min="0"
                   step="0.01"
+                  placeholder="0.00"
                   required
                 />
               </div>

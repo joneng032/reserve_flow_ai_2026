@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     app_title: str = "API de Autenticación"
     app_version: str = "1.0.0"
 
-    model_config = ConfigDict(env_file=".env", case_sensitive=False)
+    model_config = ConfigDict(env_file=".env", case_sensitive=False, extra="allow")
 
 
 # Instancia singleton de configuración

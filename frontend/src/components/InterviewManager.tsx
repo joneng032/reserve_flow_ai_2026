@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useId } from "react";
 import { apiService } from "../services/api";
 import type { Interview, InterviewCreate, InterviewUpdate } from "../types/api";
 
@@ -47,6 +47,7 @@ export default function InterviewManager({
   >([]);
   const [newQuestion, setNewQuestion] = useState("");
   const [newAnswer, setNewAnswer] = useState("");
+  const id = useId();
 
   const loadInterview = useCallback(async () => {
     if (!interviewId) return;
@@ -252,10 +253,14 @@ export default function InterviewManager({
         {/* Interviewee Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor={`${id}-interviewee-name`}
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Interviewee Name *
             </label>
             <input
+              id={`${id}-interviewee-name`}
               type="text"
               value={interview.interviewee_name}
               onChange={(e) =>
@@ -539,10 +544,14 @@ export default function InterviewManager({
 
           {interview.follow_up_required && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor={`${id}-follow-up-date`}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Follow-up Date
               </label>
               <input
+                id={`${id}-follow-up-date`}
                 type="date"
                 value={interview.follow_up_date || ""}
                 onChange={(e) =>

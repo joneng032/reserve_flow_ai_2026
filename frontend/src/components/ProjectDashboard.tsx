@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { apiService } from "../services/api";
 import type {
   Project,
+  ProjectCreate,
   Component,
   CostAnalysis,
   ReserveAnalysis,
-} from "../services/api";
+} from "../types/api";
 import ProjectForm from "./ProjectForm";
 import MeetingNotes from "./MeetingNotes";
 import CommunicationLog from "./CommunicationLog";
@@ -33,11 +34,7 @@ function ProjectCard({
     useState<ReserveAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadProjectData();
-  }, [project.id]);
-
-  const loadProjectData = async () => {
+  const loadProjectData = useCallback(async () => {
     if (!project.id) return;
 
     try {
@@ -56,7 +53,11 @@ function ProjectCard({
     } finally {
       setLoading(false);
     }
-  };
+  }, [project.id]);
+
+  useEffect(() => {
+    loadProjectData();
+  }, [loadProjectData]);
 
   const handleDelete = async () => {
     if (!project.id) return;
@@ -152,16 +153,21 @@ function ProjectCard({
                       {reserveAnalysis.percent_funded.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full"
-                      style={{
-                        width: `${Math.min(
-                          reserveAnalysis.percent_funded,
-                          100,
-                        )}%`,
-                      }}
-                    ></div>
+                  <div className="w-full">
+                    {(() => {
+                      const pct = Math.min(
+                        Math.max(Math.round(reserveAnalysis.percent_funded), 0),
+                        100,
+                      );
+                      return (
+                        <progress
+                          value={pct}
+                          max={100}
+                          className="w-full h-2 rounded-full bg-gray-200"
+                          aria-label={`Percent funded: ${pct}%`}
+                        />
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
@@ -240,7 +246,7 @@ export default function ProjectDashboard() {
     }
   };
 
-  const handleCreateProject = async (formData: any) => {
+  const handleCreateProject = async (formData: ProjectCreate) => {
     try {
       const projectData = {
         name: formData.name,

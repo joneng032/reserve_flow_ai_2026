@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useId } from "react";
 import { apiService } from "../services/api";
 import type { Meeting, MeetingCreate, MeetingUpdate } from "../types/api";
 
@@ -51,6 +51,7 @@ export default function MeetingNotes({
     status: "pending",
   });
   const [newTag, setNewTag] = useState("");
+  const id = useId();
 
   const loadMeeting = useCallback(async () => {
     if (!meetingId) return;
@@ -235,10 +236,14 @@ export default function MeetingNotes({
         {/* Basic Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor={`${id}-meeting-title`}
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Meeting Title *
             </label>
             <input
+              id={`${id}-meeting-title`}
               type="text"
               value={meeting.title}
               onChange={(e) =>
@@ -250,10 +255,14 @@ export default function MeetingNotes({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor={`${id}-meeting-date`}
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Meeting Date *
             </label>
             <input
+              id={`${id}-meeting-date`}
               type="date"
               value={meeting.meeting_date}
               onChange={(e) =>
@@ -506,6 +515,7 @@ export default function MeetingNotes({
               placeholder="Assignee"
             />
             <input
+              id={`${id}-action-due-date`}
               type="date"
               value={newActionItem.due_date}
               onChange={(e) =>
@@ -515,6 +525,7 @@ export default function MeetingNotes({
                 }))
               }
               className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Action item due date"
             />
             <button
               onClick={addActionItem}
@@ -560,10 +571,14 @@ export default function MeetingNotes({
 
         {/* Next Meeting Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor={`${id}-next-meeting-date`}
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Next Meeting Date
           </label>
           <input
+            id={`${id}-next-meeting-date`}
             type="date"
             value={meeting.next_meeting_date || ""}
             onChange={(e) =>

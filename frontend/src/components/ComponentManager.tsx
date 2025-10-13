@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useId } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiService } from "../services/api";
 import type {
@@ -18,6 +18,7 @@ interface ComponentFormData {
 }
 
 export default function ComponentManager() {
+  const id = useId();
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [components, setComponents] = useState<Component[]>([]);
@@ -315,10 +316,15 @@ export default function ComponentManager() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor={`${id}-component-category`}
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Category
                   </label>
                   <select
+                    id={`${id}-component-category`}
+                    aria-label="Component category"
                     value={formData.category}
                     onChange={(e) =>
                       setFormData((prev) => ({

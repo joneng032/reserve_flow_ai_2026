@@ -30,7 +30,7 @@ export class ReserveStudyService {
     client_name?: string;
     address?: string;
     current_reserve_balance?: number;
-    custom_fields?: Record<string, any>;
+    custom_fields?: Record<string, unknown>;
   }): Promise<Project> {
     try {
       // Get current user profile ID (this would come from auth context)
@@ -89,7 +89,7 @@ export class ReserveStudyService {
       category?: string;
       base_cost?: number;
       useful_life?: number;
-      custom_fields?: Record<string, any>;
+      custom_fields?: Record<string, unknown>;
     },
   ): Promise<Component> {
     try {
@@ -140,7 +140,7 @@ export class ReserveStudyService {
     categoryData: {
       name: string;
       parent_id?: string;
-      meta?: Record<string, any>;
+      meta?: Record<string, unknown>;
     },
   ): Promise<Category> {
     try {
@@ -275,7 +275,16 @@ export class ReserveStudyService {
   }
 
   // Export utilities
-  static async exportProjectData(projectId: string): Promise<any> {
+  static async exportProjectData(projectId: string): Promise<{
+    project: Project;
+    components: Component[];
+    categories: Category[];
+    analytics: {
+      costAnalysis: CostAnalysis | null;
+      reserveAnalysis: ReserveAnalysis | null;
+    };
+    exportedAt: string;
+  }> {
     try {
       const [project, components, categories, costAnalysis, reserveAnalysis] =
         await Promise.all([

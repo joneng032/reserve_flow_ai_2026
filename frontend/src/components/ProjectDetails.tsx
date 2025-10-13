@@ -368,27 +368,29 @@ export default function ProjectDetails() {
                       {reserveAnalysis.percent_funded.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div
-                      className={`h-3 rounded-full transition-all duration-300 ${
-                        reserveAnalysis.percent_funded >= 100
-                          ? "w-full bg-green-600"
-                          : reserveAnalysis.percent_funded >= 75
+                  <div className="w-full">
+                    {(() => {
+                      const pct = Math.min(
+                        Math.max(Math.round(reserveAnalysis.percent_funded), 0),
+                        100,
+                      );
+                      const colorClass =
+                        pct >= 100
+                          ? "bg-green-600"
+                          : pct >= 75
                           ? "bg-blue-600"
-                          : reserveAnalysis.percent_funded >= 50
+                          : pct >= 50
                           ? "bg-yellow-600"
-                          : "bg-red-600"
-                      }`}
-                      style={
-                        {
-                          "--tw-bg-opacity": "1",
-                          width: `${Math.min(
-                            reserveAnalysis.percent_funded,
-                            100,
-                          )}%`,
-                        } as React.CSSProperties
-                      }
-                    ></div>
+                          : "bg-red-600";
+                      return (
+                        <progress
+                          value={pct}
+                          max={100}
+                          className={`w-full h-3 rounded-full ${colorClass}`}
+                          aria-label={`Percent funded: ${pct}%`}
+                        />
+                      );
+                    })()}
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>

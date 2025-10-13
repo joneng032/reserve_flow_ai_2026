@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { apiService } from "../services/api";
-import type { ProtectedResponse, User } from "../types/api";
+import type { ProtectedResponse } from "../types/api";
 import { showToast } from "./Toast";
 import { Header } from "./Header";
 import { UserProfile } from "./UserProfile";
@@ -14,7 +14,7 @@ export const ReserveStudyDashboard = ({
   onLogout,
 }: ReserveStudyDashboardProps) => {
   const [userData, setUserData] = useState<ProtectedResponse | null>(null);
-  const [_users, setUsers] = useState<User[]>([]);
+  // Users list intentionally omitted from UI for now; simplify state
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<"overview" | "projects">(
@@ -24,15 +24,22 @@ export const ReserveStudyDashboard = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [protectedData, usersData] = await Promise.all([
-          apiService.getProtectedData(),
-          apiService.getUsers(),
-        ]);
-
+        const protectedData = await apiService.getProtectedData();
         setUserData(protectedData);
-        setUsers(usersData.users);
-      } catch (err: any) {
-        setError(err.response?.data?.detail || "Error al cargar los datos");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else if (
+          typeof err === "object" &&
+          err !== null &&
+          "response" in err
+        ) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const e = err as any;
+          setError(e?.response?.data?.detail ?? "Error al cargar los datos");
+        } else {
+          setError(String(err));
+        }
       } finally {
         setIsLoading(false);
       }

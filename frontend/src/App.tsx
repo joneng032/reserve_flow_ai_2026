@@ -19,11 +19,11 @@ function App() {
     setIsLoading(false);
   }, []);
 
-  const handleLoginSuccess = (_token: string) => {
+  const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
 
-  const handleRegisterSuccess = (_token: string) => {
+  const handleRegisterSuccess = () => {
     setIsAuthenticated(true);
   };
 

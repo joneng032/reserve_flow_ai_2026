@@ -90,9 +90,12 @@ export const apiService = {
       );
       console.log("🌐 API Service: Registration successful:", response.data);
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("🌐 API Service: Registration failed:", error);
-      console.error("🌐 API Service: Error response:", error.response);
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const e = error as unknown as { response?: unknown };
+        console.error("🌐 API Service: Error response:", e.response);
+      }
       throw error;
     }
   },
@@ -112,15 +115,15 @@ export const apiService = {
     return response.data;
   },
 
-  healthCheck: async (): Promise<any> => {
+  healthCheck: async (): Promise<unknown> => {
     const response = await apiClient.get("/health");
-    return response.data;
+    return response.data as unknown;
   },
 
   // Reserve Study endpoints
-  reserveStudiesHealth: async (): Promise<any> => {
+  reserveStudiesHealth: async (): Promise<unknown> => {
     const response = await apiClient.get("/reserve-studies/health");
-    return response.data;
+    return response.data as unknown;
   },
 
   // Project endpoints
@@ -255,38 +258,38 @@ export const apiService = {
   },
 
   // Metro multipliers
-  getMetroMultipliers: async (): Promise<any[]> => {
+  getMetroMultipliers: async (): Promise<unknown[]> => {
     const response = await apiClient.get("/metro-multipliers");
-    return response.data;
+    return response.data as unknown[];
   },
 
   setProjectMetro: async (
     projectId: string,
     metroData: { metro_area: string; custom_multiplier?: number },
-  ): Promise<any> => {
+  ): Promise<unknown> => {
     const response = await apiClient.post(
       `/projects/${projectId}/metro-setting`,
       metroData,
     );
-    return response.data;
+    return response.data as unknown;
   },
 
   // Component catalog
-  getComponentCatalog: async (category?: string): Promise<any[]> => {
+  getComponentCatalog: async (category?: string): Promise<unknown[]> => {
     const params = category ? { category } : {};
     const response = await apiClient.get("/component-catalog", { params });
-    return response.data;
+    return response.data as unknown[];
   },
 
   // Audit logs
   getProjectAuditLogs: async (
     projectId: string,
     params?: { entity_type?: string; skip?: number; limit?: number },
-  ): Promise<any[]> => {
+  ): Promise<unknown[]> => {
     const response = await apiClient.get(`/projects/${projectId}/audit-logs`, {
       params,
     });
-    return response.data;
+    return response.data as unknown[];
   },
 
   // Meeting endpoints

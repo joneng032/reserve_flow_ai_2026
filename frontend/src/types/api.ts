@@ -48,10 +48,29 @@ export interface Project {
   client_name?: string;
   address?: string;
   current_reserve_balance?: number;
+  profile_id?: string;
   created_at?: string;
   updated_at?: string;
-  custom_fields?: Record<string, any>;
+  custom_fields?: Record<string, unknown>;
 }
+
+// Convenience type for creating/updating projects via the API
+export type ProjectCreate = Omit<
+  Project,
+  "id" | "profile_id" | "created_at" | "updated_at"
+> & {
+  client_contact_name?: string;
+  client_email?: string;
+  client_phone?: string;
+  property_type?: string;
+  property_size?: number;
+  property_size_unit?: string;
+  ownership_structure?: string;
+  target_funding_percentage?: number;
+  project_status?: string;
+  project_description?: string;
+  custom_fields?: Record<string, unknown>;
+};
 
 // Tipos para componentes
 export interface Component {
@@ -82,7 +101,7 @@ export interface Meeting {
   agenda_items?: string[];
   discussion_notes?: string;
   decisions?: string[];
-  action_items?: Array<Record<string, any>>;
+  action_items?: Array<Record<string, unknown>>;
   next_meeting_date?: string;
   attachments?: string[];
   tags?: string[];
@@ -103,14 +122,14 @@ export interface MeetingCreate {
   agenda_items?: string[];
   discussion_notes?: string;
   decisions?: string[];
-  action_items?: Array<Record<string, any>>;
+  action_items?: Array<Record<string, unknown>>;
   next_meeting_date?: string;
   attachments?: string[];
   tags?: string[];
   project_id: string;
 }
 
-export interface MeetingUpdate extends Partial<MeetingCreate> {}
+export type MeetingUpdate = Partial<MeetingCreate>;
 
 // Tipos para comunicaciones
 export interface Communication {
@@ -153,7 +172,7 @@ export interface CommunicationCreate {
   project_id: string;
 }
 
-export interface CommunicationUpdate extends Partial<CommunicationCreate> {}
+export type CommunicationUpdate = Partial<CommunicationCreate>;
 
 // Tipos para archivos multimedia
 export interface MediaFile {
@@ -165,7 +184,7 @@ export interface MediaFile {
   file_size: number;
   description?: string;
   tags?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   related_meeting_id?: string;
   related_component_id?: string;
   related_communication_id?: string;
@@ -183,14 +202,14 @@ export interface MediaFileCreate {
   file_size: number;
   description?: string;
   tags?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   related_meeting_id?: string;
   related_component_id?: string;
   related_communication_id?: string;
   project_id: string;
 }
 
-export interface MediaFileUpdate extends Partial<MediaFileCreate> {}
+export type MediaFileUpdate = Partial<MediaFileCreate>;
 
 // Tipos para entrevistas
 export interface Interview {
@@ -204,7 +223,7 @@ export interface Interview {
   location?: string;
   status: string;
   question_template?: string;
-  responses?: Record<string, any>;
+  responses?: Record<string, unknown>;
   notes?: string;
   follow_up_required: boolean;
   follow_up_date?: string;
@@ -226,7 +245,7 @@ export interface InterviewCreate {
   location?: string;
   status?: string;
   question_template?: string;
-  responses?: Record<string, any>;
+  responses?: Record<string, unknown>;
   notes?: string;
   follow_up_required?: boolean;
   follow_up_date?: string;
@@ -234,7 +253,7 @@ export interface InterviewCreate {
   project_id: string;
 }
 
-export interface InterviewUpdate extends Partial<InterviewCreate> {}
+export type InterviewUpdate = Partial<InterviewCreate>;
 
 // Tipos para inspecciones
 export interface Inspection {
@@ -271,7 +290,7 @@ export interface InspectionCreate {
   project_id: string;
 }
 
-export interface InspectionUpdate extends Partial<InspectionCreate> {}
+export type InspectionUpdate = Partial<InspectionCreate>;
 
 // Tipos para elementos de inspección
 export interface InspectionItem {
@@ -311,7 +330,7 @@ export interface InspectionItemCreate {
   inspection_id: string;
 }
 
-export interface InspectionItemUpdate extends Partial<InspectionItemCreate> {}
+export type InspectionItemUpdate = Partial<InspectionItemCreate>;
 
 // Tipos para evidencia
 export interface Evidence {
@@ -335,8 +354,8 @@ export interface Evidence {
   related_inspection_id?: string;
   related_inspection_item_id?: string;
   related_component_id?: string;
-  device_info?: Record<string, any>;
-  metadata?: Record<string, any>;
+  device_info?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
   project_id: string;
   captured_by?: string;
   created_at?: string;
@@ -363,19 +382,19 @@ export interface EvidenceCreate {
   related_inspection_id?: string;
   related_inspection_item_id?: string;
   related_component_id?: string;
-  device_info?: Record<string, any>;
-  metadata?: Record<string, any>;
+  device_info?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
   project_id: string;
 }
 
-export interface EvidenceUpdate extends Partial<EvidenceCreate> {}
+export type EvidenceUpdate = Partial<EvidenceCreate>;
 
 // Tipos para análisis
 export interface CostAnalysis {
   total_components: number;
   total_value: number;
   average_cost: number;
-  categories_breakdown: Record<string, Record<string, any>>;
+  categories_breakdown: Record<string, Record<string, unknown>>;
 }
 
 export interface ReserveAnalysis {

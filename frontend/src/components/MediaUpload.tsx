@@ -299,12 +299,12 @@ export default function MediaUpload({
                     </div>
                     {uploadProgress[file.name] !== undefined && (
                       <div className="mt-1">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress[file.name]}%` }}
-                          ></div>
-                        </div>
+                        <progress
+                          value={uploadProgress[file.name]}
+                          max={100}
+                          className="w-full h-2 rounded-full"
+                          aria-label={`Upload progress for ${file.name}`}
+                        />
                         <div className="text-xs text-gray-600 mt-1">
                           {uploadProgress[file.name]}% uploaded
                         </div>
