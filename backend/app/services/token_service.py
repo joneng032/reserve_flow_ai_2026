@@ -47,11 +47,11 @@ class JWTTokenStrategy(ITokenStrategy):
         else:
             expire = datetime.utcnow() + timedelta(minutes=self.settings.access_token_expire_minutes)
 
-    # Ensure the `exp` claim is a numeric timestamp for compatibility
-    # with both the pure-Python and external JWT libraries and to
-    # prevent JSON-serialization issues in tests that provide fake
-    # encode implementations.
-    to_encode.update({"exp": int(expire.timestamp())})
+        # Ensure the `exp` claim is a numeric timestamp for compatibility
+        # with both the pure-Python and external JWT libraries and to
+        # prevent JSON-serialization issues in tests that provide fake
+        # encode implementations.
+        to_encode.update({"exp": int(expire.timestamp())})
         encoded_jwt = jwt.encode(to_encode, self.settings.secret_key, algorithm=self.settings.algorithm)
         return encoded_jwt
     
