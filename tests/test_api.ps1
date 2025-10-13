@@ -1,5 +1,6 @@
 # Script de prueba para la API
-$baseUrl = "https://webapp-python-ifz5h5aam-joneng032s-projects.vercel.app"
+$baseUrl = $env:TEST_BASE_URL
+if (-not $baseUrl) { $baseUrl = "https://webapp-python-ifz5h5aam-joneng032s-projects.vercel.app" }
 
 Write-Host "🧪 Iniciando pruebas de la API..." -ForegroundColor Green
 Write-Host "URL Base: $baseUrl" -ForegroundColor Yellow
@@ -51,7 +52,7 @@ try {
     $login = Invoke-RestMethod -Uri "$baseUrl/api/login" -Method POST -ContentType "application/json" -Body $loginData
     Write-Host "✅ Login exitoso:" -ForegroundColor Green
     $login | ConvertTo-Json -Depth 3
-
+    
     # Guardar el token para las pruebas siguientes
     $token = $login.access_token
     Write-Host "🔑 Token obtenido: $($token.Substring(0, 20))..." -ForegroundColor Yellow
@@ -88,4 +89,4 @@ try {
     Write-Host "❌ Error en frontend: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-Write-Host "`n🎉 Pruebas completadas!" -ForegroundColor Green
+Write-Host "`n🎉 Pruebas completadas!" -ForegroundColor Green 

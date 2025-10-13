@@ -1,10 +1,11 @@
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 from app.repositories.auth_repository import AuthRepository
 from app.repositories.user_repository import UserRepository
 from app.services.auth_service import AuthService
 from app.services.token_service import TokenService
 from app.services.user_service import UserService
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 # Configuración de seguridad
 # Use auto_error=False so we can standardize 401 + WWW-Authenticate responses

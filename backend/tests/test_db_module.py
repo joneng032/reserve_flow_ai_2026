@@ -5,7 +5,7 @@ import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from database import Database, DatabaseError
+from database import Database
 
 
 def test_database_mock_mode_when_env_missing(monkeypatch):
