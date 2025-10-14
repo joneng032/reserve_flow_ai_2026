@@ -426,22 +426,50 @@ export default function MeetingNotes({
           </ul>
         </div>
 
-        {/* Discussion Notes */}
+        {/* Discussion Notes (lightweight rich-text) */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Discussion Notes
           </label>
-          <textarea
-            value={meeting.discussion_notes || ""}
-            onChange={(e) =>
+          <div className="mb-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => document.execCommand("bold")}
+              aria-label="Bold"
+              className="px-2 py-1 border rounded"
+            >
+              B
+            </button>
+            <button
+              type="button"
+              onClick={() => document.execCommand("italic")}
+              aria-label="Italic"
+              className="px-2 py-1 border rounded"
+            >
+              I
+            </button>
+            <button
+              type="button"
+              onClick={() => document.execCommand("insertUnorderedList")}
+              aria-label="Bullet list"
+              className="px-2 py-1 border rounded"
+            >
+              •
+            </button>
+          </div>
+          <div
+            role="textbox"
+            aria-label="Discussion notes"
+            contentEditable
+            suppressContentEditableWarning
+            onInput={(e) =>
               setMeeting((prev) => ({
                 ...prev,
-                discussion_notes: e.target.value,
+                discussion_notes: (e.target as HTMLElement).innerHTML,
               }))
             }
-            rows={6}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Detailed notes from the meeting discussion..."
+            className="min-h-[6rem] w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            dangerouslySetInnerHTML={{ __html: meeting.discussion_notes || "" }}
           />
         </div>
 

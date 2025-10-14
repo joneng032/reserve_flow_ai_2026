@@ -234,6 +234,14 @@ describe("MeetingNotes", () => {
     fireEvent.change(titleInput, { target: { value: "New Meeting" } });
     fireEvent.change(dateInput, { target: { value: "2024-01-15" } });
 
+    // Fill discussion notes using the rich-text editor
+    const editable = container.querySelector(
+      '[aria-label="Discussion notes"]',
+    ) as HTMLElement;
+    // Simulate a simple HTML fragment entry
+    editable.innerHTML = "<p>Key notes about budget</p>";
+    fireEvent.input(editable);
+
     // Submit form
     const saveButton = screen.getByText("Save Meeting Notes");
     fireEvent.click(saveButton);
@@ -248,7 +256,7 @@ describe("MeetingNotes", () => {
         facilitator: "",
         note_taker: "",
         agenda_items: [],
-        discussion_notes: "",
+        discussion_notes: "<p>Key notes about budget</p>",
         decisions: [],
         action_items: [],
         next_meeting_date: undefined,
