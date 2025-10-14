@@ -15,8 +15,13 @@ if _repo_root not in sys.path:
 
 # Default to the simple pure-Python JWT implementation for local test runs
 # to avoid importing heavy native crypto backends during test collection.
-# CI workflows will explicitly set USE_SIMPLE_JWT as needed.
-os.environ.setdefault("USE_SIMPLE_JWT", "1")
+# CI workflows may set USE_SIMPLE_JWT explicitly in matrix entries. Some CI
+# runners set an environment variable to an empty string which counts as
+# "present" for setdefault; treat empty values as unset so tests still
+# default to the safe pure-Python strategy during collection.
+if not os.environ.get("USE_SIMPLE_JWT"):
+    # Covers both not-present and present-but-empty values
+    os.environ["USE_SIMPLE_JWT"] = "1"
 
 
 @pytest.fixture(autouse=True)
