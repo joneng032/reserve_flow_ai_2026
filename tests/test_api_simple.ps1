@@ -1,5 +1,6 @@
 # Script de prueba para la API
-$baseUrl = "https://webapp-python-ifz5h5aam-godie007s-projects.vercel.app"
+$baseUrl = $env:TEST_BASE_URL
+if (-not $baseUrl) { $baseUrl = "https://webapp-python-ifz5h5aam-joneng032s-projects.vercel.app" }
 
 Write-Host "Iniciando pruebas de la API..." -ForegroundColor Green
 Write-Host "URL Base: $baseUrl" -ForegroundColor Yellow

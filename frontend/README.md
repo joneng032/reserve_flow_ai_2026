@@ -1,144 +1,148 @@
-# Frontend - API de Autenticación
+# Frontend - Authentication API
 
-Aplicación frontend construida con Vite + React + TypeScript que consume la API de autenticación.
+Frontend application built with Vite + React + TypeScript that consumes the authentication API.
 
-## 🚀 Características
+## 🚀 Features
 
-- **Vite** - Build tool rápido con hot reload
-- **React 18** - Framework de UI
-- **TypeScript** - Tipado estático
-- **Tailwind CSS** - Framework de estilos
-- **React Hook Form** - Manejo de formularios
-- **Axios** - Cliente HTTP
-- **Yup** - Validación de esquemas
+- **Vite** - Fast build tool with hot reload
+- **React 18** - UI Framework
+- **TypeScript** - Static typing
+- **Tailwind CSS** - Styling framework
+- **React Hook Form** - Form handling
+- **Axios** - HTTP client
+- **Yup** - Schema validation
 
-## 📦 Instalación
+## 📦 Installation
 
 ```bash
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Ejecutar en modo desarrollo
+# Run in development mode
 npm run dev
 
-# Construir para producción
+# Build for production
 npm run build
 
-# Previsualizar build de producción
+# Preview production build
 npm run preview
 ```
 
-## 🔧 Configuración
+## 🔧 Configuration
 
-### Variables de Entorno
+### Environment Variables
 
-Crea un archivo `.env` en el directorio `frontend/`:
+Create a `.env` file in the `frontend/` directory:
 
 ```env
 VITE_API_URL=http://localhost:3000/api
 ```
 
-### API Backend
+### Backend API
 
-Asegúrate de que el backend esté ejecutándose en `http://localhost:3000`
+Make sure the backend is running on `http://localhost:3000`
 
-## 🎯 Funcionalidades
+## 🎯 Features
 
-### Autenticación
-- Formulario de login con validación
-- Almacenamiento de token JWT en localStorage
-- Redirección automática al dashboard
-- Manejo de errores de autenticación
+### Authentication
+
+- Login form with validation
+- JWT token storage in localStorage
+- Automatic redirect to dashboard
+- Error handling
 
 ### Dashboard
-- Información del usuario autenticado
-- Lista de usuarios del sistema
-- Estado de usuarios (activo/inactivo)
-- Cerrar sesión
+
+- Authenticated user information
+- System user list
+- User status (active/inactive)
+- Logout
 
 ### UI/UX
-- Diseño responsive con Tailwind CSS
-- Loading states
-- Manejo de errores
-- Animaciones suaves
 
-## 🏗️ Estructura del Proyecto
+- Responsive design with Tailwind CSS
+- Loading states
+- Error handling
+- Smooth animations
+
+## 🏗️ Project Structure
 
 ```
 frontend/
 ├── src/
-│   ├── components/     # Componentes React
+│   ├── components/     # React components
 │   │   ├── LoginForm.tsx
 │   │   └── Dashboard.tsx
-│   ├── services/       # Servicios de API
+│   ├── services/       # API services
 │   │   └── api.ts
-│   ├── types/          # Tipos TypeScript
+│   ├── types/          # TypeScript types
 │   │   └── api.ts
-│   ├── App.tsx         # Componente principal
-│   ├── main.tsx        # Punto de entrada
-│   └── index.css       # Estilos globales
-├── public/             # Archivos estáticos
-├── index.html          # HTML principal
-├── package.json        # Dependencias
-├── tailwind.config.js  # Configuración Tailwind
-├── postcss.config.js   # Configuración PostCSS
-├── tsconfig.json       # Configuración TypeScript
-└── vite.config.ts      # Configuración Vite
+│   ├── App.tsx         # Main component
+│   ├── main.tsx        # Entry point
+│   └── index.css       # Global styles
+├── public/             # Static assets
+├── index.html          # Main HTML
+├── package.json        # Node.js dependencies
+├── tailwind.config.js  # Tailwind configuration
+├── postcss.config.js   # PostCSS configuration
+├── tsconfig.json       # TypeScript configuration
+└── vite.config.ts      # Vite configuration
 ```
 
-## 🔌 Endpoints Consumidos
+## 🔌 Consumed Endpoints
 
-- `POST /api/login` - Autenticación
-- `GET /api/protected` - Información del usuario
-- `GET /api/users` - Lista de usuarios
+- `POST /api/login` - Authentication
+- `GET /api/protected` - User information
+- `GET /api/users` - User list
 
-## 🎨 Tecnologías Utilizadas
+## 🎨 Used Technologies
 
-- **Vite** - Build tool y dev server
-- **React** - Framework de UI
-- **TypeScript** - Tipado estático
-- **Tailwind CSS** - Framework de estilos
-- **React Hook Form** - Manejo de formularios
-- **Yup** - Validación de esquemas
-- **Axios** - Cliente HTTP
+- **Vite** - Build tool and dev server
+- **React** - UI Framework
+- **TypeScript** - Static typing
+- **Tailwind CSS** - Styling framework
+- **React Hook Form** - Form handling
+- **Yup** - Schema validation
+- **Axios** - HTTP client
 
-## 🚀 Desarrollo
+## 🚀 Development
 
 ```bash
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Ejecutar en modo desarrollo
+# Run in development mode
 npm run dev
 ```
 
-La aplicación estará disponible en `http://localhost:5173`
+The application will be available at `http://localhost:5173`
 
-## 🔧 Scripts Disponibles
+## 🔧 Available Scripts
 
-- `npm run dev` - Servidor de desarrollo
-- `npm run build` - Construir para producción
-- `npm run preview` - Previsualizar build
-- `npm run lint` - Linting con ESLint
+- `npm run dev` - Development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview build
+- `npm run lint` - ESLint linting
 
 ## 📱 Responsive Design
 
-La aplicación está completamente optimizada para:
-- 📱 Móviles (320px+)
+The application is fully optimized for:
+
+- 📱 Mobiles (320px+)
 - 📱 Tablets (768px+)
 - 💻 Desktop (1024px+)
 
-## 🔒 Seguridad
+## 🔒 Security
 
-- Tokens JWT almacenados en localStorage
-- Interceptores de axios para manejo automático de tokens
-- Redirección automática en caso de token expirado
-- Validación de formularios en el frontend
+- JWT tokens stored in localStorage
+- Axios interceptors for automatic token handling
+- Automatic redirect on token expiration
+- Frontend form validation
 
-## 🎯 Próximos Pasos
+## 🎯 Next Steps
 
-- [ ] Implementar refresh tokens
-- [ ] Agregar más páginas (perfil, configuración)
-- [ ] Implementar notificaciones toast
-- [ ] Agregar tests unitarios
-- [ ] Implementar PWA
+- [ ] Implement refresh tokens
+- [ ] Add more pages (profile, settings)
+- [ ] Implement toast notifications
+- [ ] Add unit tests
+- [ ] Implement PWA

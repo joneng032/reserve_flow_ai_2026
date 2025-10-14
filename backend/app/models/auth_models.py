@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
 from typing import Optional
+
+from pydantic import BaseModel, Field
+
 
 class LoginRequest(BaseModel):
     """
@@ -22,4 +24,4 @@ class ErrorResponse(BaseModel):
     """
     error: str = Field(..., description="Tipo de error")
     message: str = Field(..., description="Mensaje de error")
-    details: Optional[str] = Field(None, description="Detalles adicionales del error") 
+    details: Optional[str] = Field(None, description="Detalles adicionales del error")

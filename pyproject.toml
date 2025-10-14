@@ -1,0 +1,6 @@
+[tool.ruff]
+exclude = ["venv", "env", "node_modules"]
+
+[tool.ruff.lint]
+line-length = 88
+extend-ignore = ["E203", "E501"]
