@@ -1,24 +1,41 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { apiService } from '../services/api';
-import type { RegisterRequest } from '../types/api';
-import { showToast } from './Toast';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { apiService } from "../services/api";
+import type { RegisterRequest } from "../types/api";
+import { showToast } from "./Toast";
 
-const schema = yup.object({
-  email: yup.string().email('Email inválido').required('El email es requerido'),
-  username: yup.string().min(3, 'El usuario debe tener al menos 3 caracteres').required('El usuario es requerido'),
-  password: yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es requerida'),
-  confirmPassword: yup.string().oneOf([yup.ref('password')], 'Las contraseñas deben coincidir').required('Confirma tu contraseña'),
-}).required();
+const schema = yup
+  .object({
+    email: yup
+      .string()
+      .email("Email inválido")
+      .required("El email es requerido"),
+    username: yup
+      .string()
+      .min(3, "El usuario debe tener al menos 3 caracteres")
+      .required("El usuario es requerido"),
+    password: yup
+      .string()
+      .min(6, "La contraseña debe tener al menos 6 caracteres")
+      .required("La contraseña es requerida"),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password")], "Las contraseñas deben coincidir")
+      .required("Confirma tu contraseña"),
+  })
+  .required();
 
 interface RegisterFormProps {
   onRegisterSuccess: (token: string) => void;
   onSwitchToLogin: () => void;
 }
 
-export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFormProps) => {
+export const RegisterForm = ({
+  onRegisterSuccess,
+  onSwitchToLogin,
+}: RegisterFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,50 +44,67 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<RegisterRequest & { confirmPassword: string }>({
+  } = useForm<RegisterRequest & { _confirmPassword: string }>({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (data: RegisterRequest & { confirmPassword: string }) => {
+  const onSubmit = async (
+    data: RegisterRequest & { _confirmPassword: string },
+  ) => {
     setIsLoading(true);
     setError(null);
-    
-    console.log('🚀 Starting registration process...', { email: data.email, username: data.username });
+
+    console.log("🚀 Starting registration process...", {
+      email: data.email,
+      username: data.username,
+    });
 
     try {
-      const { confirmPassword, ...registerData } = data;
-      console.log('📤 Sending registration request...', registerData);
-      
+      // _confirmPassword is an internal validation field and should not be sent to the API
+      // Remove the confirm password field and keep the rest as payload
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _confirmPassword: _unused, ...registerData } =
+        data as unknown as Record<string, unknown>;
+      console.log("📤 Sending registration request...", registerData);
+
       const response = await apiService.register(registerData);
-      console.log('📥 Registration response received:', response);
-      
+      console.log("📥 Registration response received:", response);
+
       // Verificar si requiere confirmación de email
-      if (response.access_token === "" || response.message.includes("confirmar")) {
-        console.log('✅ User created but email confirmation required');
+      if (
+        response.access_token === "" ||
+        response.message.includes("confirmar")
+      ) {
+        console.log("✅ User created but email confirmation required");
         // Usuario creado pero requiere confirmación de email
         showToast.success(response.message);
         // Limpiar formulario y redirigir al login
         reset();
         onSwitchToLogin();
       } else {
-        console.log('✅ User created and authenticated automatically');
+        console.log("✅ User created and authenticated automatically");
         // Usuario creado y autenticado automáticamente
-        localStorage.setItem('token', response.access_token);
-        showToast.success('¡Usuario registrado exitosamente!');
+        localStorage.setItem("token", response.access_token);
+        showToast.success("¡Usuario registrado exitosamente!");
         onRegisterSuccess(response.access_token);
       }
-    } catch (err: any) {
-      console.error('❌ Registration error:', err);
-      console.error('❌ Error response:', err.response);
-      console.error('❌ Error message:', err.message);
-      
-      const errorMessage = err.response?.data?.detail || err.message || 'Error al registrar usuario';
-      console.error('❌ Final error message:', errorMessage);
-      
+    } catch (err: unknown) {
+      console.error("❌ Registration error:", err);
+      let errorMessage = "Error al registrar usuario";
+      if (err instanceof Error) {
+        console.error("❌ Error message:", err.message);
+        errorMessage = err.message;
+      } else if (typeof err === "object" && err !== null && "response" in err) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const e = err as any;
+        console.error("❌ Error response:", e.response);
+        errorMessage = e?.response?.data?.detail ?? errorMessage;
+      }
+      console.error("❌ Final error message:", errorMessage);
       setError(errorMessage);
       showToast.error(errorMessage);
     } finally {
-      console.log('🏁 Registration process finished');
+      console.log("🏁 Registration process finished");
       setIsLoading(false);
     }
   };
@@ -90,7 +124,7 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
               </p>
             </div>
           </div>
-          
+
           {/* Formulario con mejor estructura */}
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-4">
@@ -100,7 +134,7 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
                   Correo electrónico
                 </label>
                 <input
-                  {...register('email')}
+                  {...register("email")}
                   type="email"
                   className="form-input"
                   placeholder="tu@email.com"
@@ -120,7 +154,7 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
                   Nombre de usuario
                 </label>
                 <input
-                  {...register('username')}
+                  {...register("username")}
                   type="text"
                   className="form-input"
                   placeholder="Tu nombre de usuario"
@@ -140,7 +174,7 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
                   Contraseña
                 </label>
                 <input
-                  {...register('password')}
+                  {...register("password")}
                   type="password"
                   className="form-input"
                   placeholder="Mínimo 6 caracteres"
@@ -160,7 +194,7 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
                   Confirmar contraseña
                 </label>
                 <input
-                  {...register('confirmPassword')}
+                  {...register("confirmPassword")}
                   type="password"
                   className="form-input"
                   placeholder="Repite tu contraseña"
@@ -205,7 +239,7 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
 
               <div className="text-center pt-4 border-t border-secondary-600/30">
                 <p className="text-body text-secondary-400 responsive-text">
-                  ¿Ya tienes cuenta?{' '}
+                  ¿Ya tienes cuenta?{" "}
                   <button
                     type="button"
                     onClick={onSwitchToLogin}
@@ -221,4 +255,4 @@ export const RegisterForm = ({ onRegisterSuccess, onSwitchToLogin }: RegisterFor
       </div>
     </div>
   );
-}; 
+};

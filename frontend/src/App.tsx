@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Toaster } from 'react-hot-toast';
-import { LoginForm } from './components/LoginForm';
-import { RegisterForm } from './components/RegisterForm';
-import { Dashboard } from './components/Dashboard';
-import { EmailVerification } from './components/EmailVerification';
+import { useState, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { LoginForm } from "./components/LoginForm";
+import { RegisterForm } from "./components/RegisterForm";
+import { ReserveStudyDashboard } from "./components/ReserveStudyDashboard";
+import { EmailVerification } from "./components/EmailVerification";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -12,23 +12,23 @@ function App() {
 
   useEffect(() => {
     // Verificar si hay un token almacenado
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
     }
     setIsLoading(false);
   }, []);
 
-  const handleLoginSuccess = (_token: string) => {
+  const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
 
-  const handleRegisterSuccess = (_token: string) => {
+  const handleRegisterSuccess = () => {
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
   };
 
@@ -53,7 +53,8 @@ function App() {
 
   // Verificar si estamos en la página de verificación de email
   const urlParams = new URLSearchParams(window.location.search);
-  const isEmailVerification = urlParams.get('message') && urlParams.get('status');
+  const isEmailVerification =
+    urlParams.get("message") && urlParams.get("status");
 
   return (
     <div className="App min-h-screen">
@@ -61,11 +62,17 @@ function App() {
       {isEmailVerification ? (
         <EmailVerification />
       ) : isAuthenticated ? (
-        <Dashboard onLogout={handleLogout} />
+        <ReserveStudyDashboard onLogout={handleLogout} />
       ) : showRegister ? (
-        <RegisterForm onRegisterSuccess={handleRegisterSuccess} onSwitchToLogin={handleSwitchToLogin} />
+        <RegisterForm
+          onRegisterSuccess={handleRegisterSuccess}
+          onSwitchToLogin={handleSwitchToLogin}
+        />
       ) : (
-        <LoginForm onLoginSuccess={handleLoginSuccess} onSwitchToRegister={handleSwitchToRegister} />
+        <LoginForm
+          onLoginSuccess={handleLoginSuccess}
+          onSwitchToRegister={handleSwitchToRegister}
+        />
       )}
     </div>
   );

@@ -1,0 +1,4 @@
+# NOTE: ruff configuration has moved to pyproject.toml under [tool.ruff].
+# This file is intentionally left as a compatibility placeholder so tools
+# that look for .ruff.toml won't fail while the canonical config lives in
+# pyproject.toml.
