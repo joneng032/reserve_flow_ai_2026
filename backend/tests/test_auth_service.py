@@ -1,20 +1,17 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 from types import SimpleNamespace
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 import pytest
-
-# Ensure test import resolution when running under tools that do not set PYTHONPATH
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
-from typing import cast
 
 from backend.app.models.auth_models import LoginRequest
 from backend.app.repositories.auth_repository import IAuthRepository
 from backend.app.repositories.user_repository import IUserRepository
 from backend.app.services.auth_service import AuthService
 from backend.app.services.token_service import TokenService
+
+# Ensure test import resolution when running under tools that do not set PYTHONPATH
+# sys.path manipulation moved to conftest.py
 
 
 class FakeAuthRepo:

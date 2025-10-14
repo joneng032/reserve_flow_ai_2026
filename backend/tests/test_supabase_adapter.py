@@ -1,8 +1,7 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 import types
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+# sys.path manipulation moved to conftest.py
 from backend.app.utils import supabase_adapter
 
 

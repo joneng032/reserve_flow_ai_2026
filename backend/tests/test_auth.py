@@ -1,11 +1,10 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 
 import pytest
 from fastapi.testclient import TestClient
 
 # Ensure backend directory is on sys.path so tests can import main
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+# sys.path manipulation moved to conftest.py
 from backend.main import app, create_jwt_token
 
 

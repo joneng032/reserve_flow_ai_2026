@@ -1,14 +1,12 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 
 import pytest
-
-# Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from backend.app.models.user_models import User
 from backend.app.repositories.auth_repository import AuthRepository
 from backend.app.repositories.user_repository import UserRepository
+
+# Ensure backend package root is on sys.path for imports when running tests
 
 
 def test_user_repository_create_duplicate_raises_valueerror():

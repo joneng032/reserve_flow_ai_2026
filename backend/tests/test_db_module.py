@@ -1,11 +1,10 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
 from backend.database import Database
+
+# sys.path manipulation moved to conftest.py
 
 
 def test_database_mock_mode_when_env_missing(monkeypatch):

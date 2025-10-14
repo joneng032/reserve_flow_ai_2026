@@ -1,14 +1,10 @@
 """
 Tests for database operations
 """
-import os
-import sys
 from unittest.mock import Mock, patch
 
 import pytest
 
-# Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from backend.database import Database, db
 
 

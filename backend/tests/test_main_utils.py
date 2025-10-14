@@ -1,12 +1,11 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+# imports for test runtime are minimal; conftest sets env and path
 
 from fastapi import HTTPException
 
 import backend.main as main
 from backend import database
+
+# sys.path manipulation moved to conftest.py
 
 
 def test_safe_db_call_maps_database_error():

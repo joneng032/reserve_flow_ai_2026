@@ -1,16 +1,15 @@
 """
 Unit tests for Reserve Flow AI backend
 """
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 from typing import Generator
+
+# Ensure backend package root is on sys.path for imports when running tests
+# sys.path manipulation moved to conftest.py
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
-
-# Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-from uuid import uuid4
 
 from backend.main import app, create_jwt_token
 
@@ -90,7 +89,9 @@ class TestAPIEndpoints:
     def test_create_project_authenticated_returns_project(
         self, client: TestClient
     ) -> None:
-        """Integration-style test: POST /api/projects with a valid token should create a project in mock-mode"""
+        """Integration-style test: POST /api/projects with a valid token
+        should create a project in mock-mode
+        """
         user_id = str(uuid4())
         token = create_jwt_token(user_id, "test@example.com", "tester")
         headers = {"Authorization": f"Bearer {token}"}

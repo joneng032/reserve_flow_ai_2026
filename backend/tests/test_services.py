@@ -1,14 +1,13 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 
 import pytest
-
-# Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from backend.app.services.auth_service import AuthService
 from backend.app.services.token_service import TokenService
 from backend.app.services.user_service import UserService
+
+# Ensure backend package root is on sys.path for imports when running tests
+# sys.path manipulation moved to conftest.py
 
 
 class DummyLogin:

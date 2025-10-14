@@ -1,17 +1,18 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 
 import pytest
 from fastapi.testclient import TestClient
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
 import backend.main as main
+
+# sys.path manipulation moved to conftest.py
 
 
 @pytest.mark.api
 def test_login_and_protected_flow():
-    """Integration-style test: login with known credentials then access a protected endpoint."""
+    """Integration-style test: login with known credentials then access
+    a protected endpoint.
+    """
     payload = {"email": "diegof.e3@gmail.com", "password": "123456789"}
     with TestClient(main.app) as c:
         r = c.post("/api/login", json=payload)
@@ -29,7 +30,9 @@ def test_login_and_protected_flow():
 
 @pytest.mark.api
 def test_create_project_authenticated_returns_project():
-    """Create a project with a valid token and assert the mock DB returns a Project-like response."""
+    """Create a project with a valid token and assert the mock DB
+    returns a Project-like response.
+    """
     # Use create_jwt_token to avoid import-time crypto; the test environment
     # sets USE_SIMPLE_JWT so TokenService chooses the pure-Python strategy.
     from uuid import uuid4

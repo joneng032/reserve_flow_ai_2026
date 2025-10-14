@@ -1,14 +1,12 @@
-import os
-import sys
-
-import pytest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
+# imports for test runtime are minimal; conftest sets env and path
 from datetime import timedelta
 from typing import Any, Dict, Optional
 
+import pytest
+
 from backend.app.services.token_service import ITokenStrategy, TokenService
+
+# sys.path manipulation moved to conftest.py
 
 
 def test_simple_jwt_detects_invalid_signature():
@@ -64,7 +62,9 @@ def test_verify_token_propagates_unexpected_errors():
 def test_protected_endpoint_returns_500_on_unexpected_verify_error(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    """If verify_jwt_token raises an unexpected RuntimeError, the API should return 500."""
+    """If verify_jwt_token raises an unexpected RuntimeError,
+    the API should return 500.
+    """
     from fastapi.testclient import TestClient
 
     import backend.main as main

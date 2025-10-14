@@ -1,12 +1,12 @@
+# Keep standard library imports required by tests
 import base64
 import json
-import os
 import sys
+
+# imports for test runtime are minimal; conftest sets env and path
 import types
 from datetime import timedelta
 from typing import Any
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 import pytest
 
@@ -15,6 +15,8 @@ from backend.app.services.token_service import (  # type: ignore
     JWTTokenStrategy,
     TokenService,
 )
+
+# sys.path manipulation moved to conftest.py
 
 
 def test_simple_jwt_create_verify_happy_path():

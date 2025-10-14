@@ -50,7 +50,12 @@ repos:
       - id: flake8
         name: Check Python code style
         description: Check Python code style with flake8
-        args: [--max-line-length=88, --extend-ignore=E203,W503]
+        # Ignore E501 (line length) because Black enforces a line-length
+        # and many long FAQ/comment lines are deliberately verbose; we prefer
+        # Black + ruff/flake8 for code-level checks and allow long comments
+        # to avoid noisy churn. E203 and W503 are kept ignored for compatibility
+        # with Black's formatting decisions.
+        args: ["--max-line-length=88", "--extend-ignore=E203,W503,E501"]
         exclude: ^(venv|env|node_modules)/
 
   # JavaScript/TypeScript formatting and linting

@@ -1,16 +1,14 @@
-import os
-import sys
+# imports for test runtime are minimal; conftest sets env and path
 from types import SimpleNamespace
 
 import pytest
-
-# Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
 from fastapi.testclient import TestClient
 
 from backend import database
 from backend.main import app, create_jwt_token
+
+# Ensure backend package root is on sys.path for imports when running tests
+# sys.path manipulation moved to conftest.py
 
 
 @pytest.fixture(name="client")

@@ -1,19 +1,17 @@
-import os
-import sys
-
-import pytest
-
-# Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+# imports for test runtime are minimal; conftest sets env and path
 
 from decimal import Decimal
 from uuid import uuid4
 
+import pytest
 from fastapi import HTTPException
 
 from backend.database import Database, DatabaseError
 from backend.main import safe_db_call
 from backend.models import AuditLogCreate, ComponentCreate, ProjectCreate, ProjectUpdate
+
+# Ensure backend package root is on sys.path for imports when running tests
+# sys.path manipulation moved to conftest.py
 
 
 class _FakeQuery:
