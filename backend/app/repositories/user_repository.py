@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 
-from app.config.settings import get_settings
-from app.models.user_models import User
+from backend.app.config.settings import get_settings
+from backend.app.models.user_models import User
 
 
 class IUserRepository(ABC):
     """
     Interfaz abstracta para el repositorio de usuarios
     """
+
     @abstractmethod
     def get_user_by_username(self, username: str) -> Optional[User]:
         """Obtener usuario por nombre de usuario"""
@@ -39,10 +40,12 @@ class IUserRepository(ABC):
         """Eliminar usuario"""
         pass
 
+
 class UserRepository(IUserRepository):
     """
     Implementación del repositorio de usuarios
     """
+
     def __init__(self):
         self.settings = get_settings()
         # Simulación de base de datos en memoria
@@ -51,7 +54,7 @@ class UserRepository(IUserRepository):
                 id=1,
                 username=self.settings.test_user,
                 email=f"{self.settings.test_user}@example.com",
-                is_active=True
+                is_active=True,
             )
         }
 
@@ -94,3 +97,13 @@ class UserRepository(IUserRepository):
                 del self._users[username]
                 return True
         return False
+
+    # Test helpers - expose small APIs for tests to prepare the in-memory
+    # store rather than reaching into protected attributes.
+    def clear_users(self) -> None:
+        """Clear the in-memory user store (test helper)."""
+        self._users = {}
+
+    def set_users_store(self, store) -> None:
+        """Replace the internal users backing store (test helper)."""
+        self._users = store

@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
-from pydantic import UUID4, BaseModel, ConfigDict, Field
+from pydantic import UUID4, BaseModel, ConfigDict, Field, model_validator
 
 
 # Base models with common fields
@@ -34,16 +34,25 @@ class ProfileUpdate(ProfileBase):
     pass
 
 
+def _profile_populate_name(values):
+    """Module-level pre-validator to populate `name` from legacy `username`.
+
+    Keeping this as a standalone function avoids static-analysis tools
+    incorrectly warning about missing 'self' on methods decorated by
+    Pydantic's decorator helpers.
+    """
+    if isinstance(values, dict):
+        if "name" not in values and "username" in values:
+            values["name"] = values.get("username")
+    return values
+
+
 class Profile(ProfileBase, BaseDBModel):
     model_config = ConfigDict(from_attributes=True)
 
-    @classmethod
-    def model_validate(cls, obj):
-        # Pydantic v2 hook: ensure `name` exists when `username` is present
-        if isinstance(obj, dict):
-            if "name" not in obj and "username" in obj:
-                obj["name"] = obj.get("username")
-        return super().model_validate(obj)
+    # Attach the module-level pre-validator using Pydantic's decorator
+    # helper so static analyzers don't complain about method signatures.
+    _populate_name = model_validator(mode="before")(_profile_populate_name)
 
 
 # Project models

@@ -4,11 +4,11 @@ import sys
 import pytest
 
 # Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from app.services.auth_service import AuthService
-from app.services.token_service import TokenService
-from app.services.user_service import UserService
+from backend.app.services.auth_service import AuthService
+from backend.app.services.token_service import TokenService
+from backend.app.services.user_service import UserService
 
 
 class DummyLogin:
@@ -33,7 +33,7 @@ def test_token_service_propagates_unexpected_errors():
     svc = TokenService()
 
     class FakeStrategy:
-        def verify_token(self, token: str):
+        def verify_token(self, _token: str):
             raise RuntimeError("crypto backend failure")
 
     # Replace the underlying strategy so verify_token won't try to import
@@ -48,7 +48,7 @@ def test_token_service_get_username_raises_on_missing_sub():
     svc = TokenService()
 
     class FakeStrategy:
-        def verify_token(self, token: str):
+        def verify_token(self, _token: str):
             return {}
 
     svc.strategy = FakeStrategy()
@@ -121,7 +121,7 @@ def test_auth_service_authenticate_user_generates_token_on_success(monkeypatch):
 
 
 def test_auth_service_validate_token_propagates_database_error(monkeypatch):
-    from database import DatabaseError
+    from backend.database import DatabaseError
 
     svc = AuthService()
 

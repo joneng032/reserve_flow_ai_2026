@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from app.config.settings import get_settings
+from backend.app.config.settings import get_settings
 
 
 class IAuthRepository(ABC):
@@ -51,3 +51,14 @@ class AuthRepository(IAuthRepository):
             del self._credentials[username]
             return True
         return False
+
+    # Test helpers - these are intentionally small public helpers so tests
+    # can reset or replace the in-memory credentials backing store without
+    # poking at protected attributes directly.
+    def clear_credentials(self) -> None:
+        """Clear the in-memory credentials store (test helper)."""
+        self._credentials = {}
+
+    def set_credentials_store(self, store) -> None:
+        """Replace the internal credentials backing store (test helper)."""
+        self._credentials = store

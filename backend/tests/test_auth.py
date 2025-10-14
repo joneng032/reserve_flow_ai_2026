@@ -5,12 +5,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 # Ensure backend directory is on sys.path so tests can import main
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from main import app, create_jwt_token
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from backend.main import app, create_jwt_token
 
 
-@pytest.fixture
-def client():
+@pytest.fixture(name="client")
+def client_fixture():
     with TestClient(app) as c:
         yield c
 
@@ -61,7 +61,7 @@ def test_protected_endpoint_invalid_and_expired_tokens(client: TestClient):
 
 def test_auth_service_validate_token_propagates_unexpected_errors(monkeypatch, client):
     """Simulate an unexpected error in user repository to ensure it propagates."""
-    from app.services.auth_service import AuthService
+    from backend.app.services.auth_service import AuthService
 
     svc = AuthService()
 
@@ -88,7 +88,7 @@ def test_auth_service_validate_token_propagates_unexpected_errors(monkeypatch, c
     # so this does not require importing heavy native crypto libraries.
     from datetime import timedelta
 
-    from app.services.token_service import TokenService
+    from backend.app.services.token_service import TokenService
 
     svc = TokenService()
     expired_token = svc.create_access_token(

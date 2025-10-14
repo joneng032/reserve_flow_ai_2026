@@ -32,7 +32,14 @@ def create_supabase_client(url: str, key: str) -> Any:
         legacy_exc = ImportError(
             "legacy supabase package imported but no create_client"
         )
-    except Exception as exc:  # Could be ImportError or other import-time error
+    except (
+        ImportError,
+        OSError,
+    ) as exc:  # import-time failures should be ImportError or OSError
+        # Capture any import-time error (ImportError, OSError from binary extension init, etc.) so
+        # we can provide useful context when attempting the fallback. Narrowing this catch
+        # reduces surprise for maintainers while ensuring the adapter can surface helpful
+        # messages when import-time failures occur in environments without native extensions.
         legacy_exc = exc
 
     # Try the newer supabase_auth package (best-effort support)
@@ -45,7 +52,7 @@ def create_supabase_client(url: str, key: str) -> Any:
         raise ImportError(
             "supabase_auth module found but no compatible factory function exposed"
         )
-    except Exception as new_exc:
+    except (ImportError, OSError) as new_exc:
         # Provide helpful context about both failures
         raise ImportError(
             f"Could not create a Supabase client (legacy error: {legacy_exc}; new-api error: {new_exc})"

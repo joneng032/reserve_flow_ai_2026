@@ -6,10 +6,11 @@ import types
 from datetime import timedelta
 from typing import Any
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 import pytest
-from app.services.token_service import (  # type: ignore
+
+from backend.app.services.token_service import (  # type: ignore
     ITokenStrategy,
     JWTTokenStrategy,
     TokenService,
@@ -36,7 +37,7 @@ def test_simple_jwt_tampered_signature():
 def test_simple_jwt_corrupted_payload():
     svc = TokenService()
     token = svc.create_access_token({"sub": "u3"})
-    header_b64, payload_b64, sig = token.split(".")
+    header_b64, _payload_b64, sig = token.split(".")
     bad = header_b64 + ".!!notbase64!!." + sig
     with pytest.raises(ValueError):
         svc.verify_token(bad)

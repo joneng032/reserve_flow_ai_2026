@@ -10,11 +10,19 @@ import os
 import sys
 import uuid
 from datetime import datetime
-from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
 # Add the backend directory to Python path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "backend"))
+
+# The importer intentionally uses some broad `except Exception` handlers
+# because it is a best-effort migration tool: we want imports to continue
+# in the face of unexpected third-party client exceptions and report
+# problems rather than crashing the whole process. Mirror the database
+# module's approach and disable the linter warnings for broad-except
+# at the file level so the rationale is obvious to future maintainers.
+# pylint: disable=broad-except
+# flake8: noqa: S110
 
 # Avoid importing the supabase client at module import time. Importing
 # `supabase` can pull in native crypto extensions (via gotrue/cryptography)
@@ -64,13 +72,17 @@ class SupabaseImporter:
             # Malformed JSON is an expected, recoverable error from bad input
             print(f"❌ Invalid JSON file: {e}")
             sys.exit(1)
-        except Exception as e:
+        except OSError as e:
             # Any other unexpected IO/OS-related errors are surfaced here
+            # Narrow to OSError because file/OS-level errors are the
+            # expected cause for failures at this point and this reduces
+            # the need for a broad-except while preserving useful debug
+            # information for callers.
             print(f"❌ Unexpected error reading {filepath}: {e}")
             sys.exit(1)
 
     def create_uuid_mapping(
-        self, old_data: List[Dict[str, Any]], entity_type: str
+        self, old_data: List[Dict[str, Any]], _entity_type: str
     ) -> Dict[str, str]:
         """Create mapping from old IDs to new UUIDs"""
         mapping = {}
@@ -213,7 +225,9 @@ class SupabaseImporter:
                 except ValueError as ve:
                     # Data-shape errors from the client library
                     print(f"  ⚠️  Data error importing batch {i//batch_size + 1}: {ve}")
-                except Exception as ex:
+                except (
+                    Exception
+                ) as ex:  # noqa: S110 - third-party client may raise varied exceptions
                     # Keep a broad catch here because the supabase client may
                     # raise different third-party exceptions; surface them and
                     # continue importing remaining batches where possible.
@@ -223,7 +237,9 @@ class SupabaseImporter:
 
             print(f"✅ Successfully imported {imported} records into {table_name}")
             return imported
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # noqa: S110 - top-level import protection for external client errors
             # Final broad catch to avoid crashing the whole import script on
             # an unexpected error. We print and return 0 to indicate failure
             # for this table but keep the script running so other tables may
@@ -267,7 +283,7 @@ class SupabaseImporter:
 
     def verify_import(
         self,
-        prepared_data: Dict[str, List[Dict[str, Any]]],
+        _prepared_data: Dict[str, List[Dict[str, Any]]],
         import_results: Dict[str, int],
     ):
         """Verify that all data was imported successfully"""
@@ -290,7 +306,9 @@ class SupabaseImporter:
                 else:
                     print(f"✅ {table_name}: {actual_count} records verified")
 
-            except Exception as e:
+            except (
+                Exception
+            ) as e:  # noqa: S110 - verification should not abort on client errors
                 # Keep broad catch for third-party client errors during verification
                 issues.append(f"{table_name}: verification failed - {e}")
 
@@ -358,7 +376,9 @@ def main():
         else:
             print("🎉 Migration completed successfully!")
 
-    except Exception as e:
+    except (
+        Exception
+    ) as e:  # noqa: S110 - top-level script should report errors instead of crashing
         print(f"💥 Migration failed: {e}")
         sys.exit(1)
 

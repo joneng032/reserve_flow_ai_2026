@@ -4,43 +4,44 @@ import sys
 import pytest
 
 # Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from decimal import Decimal
 from uuid import uuid4
 
-from database import Database, DatabaseError
 from fastapi import HTTPException
-from main import safe_db_call
-from models import AuditLogCreate, ComponentCreate, ProjectCreate, ProjectUpdate
+
+from backend.database import Database, DatabaseError
+from backend.main import safe_db_call
+from backend.models import AuditLogCreate, ComponentCreate, ProjectCreate, ProjectUpdate
 
 
 class _FakeQuery:
     def __init__(self, exc):
         self._exc = exc
 
-    def select(self, *args, **kwargs):
+    def select(self, *_args, **_kwargs):
         return self
 
-    def eq(self, *args, **kwargs):
+    def eq(self, *_args, **_kwargs):
         return self
 
-    def range(self, *args, **kwargs):
+    def range(self, *_args, **_kwargs):
         return self
 
-    def insert(self, *args, **kwargs):
+    def insert(self, *_args, **_kwargs):
         return self
 
-    def update(self, *args, **kwargs):
+    def update(self, *_args, **_kwargs):
         return self
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *_args, **_kwargs):
         return self
 
-    def contains(self, *args, **kwargs):
+    def contains(self, *_args, **_kwargs):
         return self
 
-    def order(self, *args, **kwargs):
+    def order(self, *_args, **_kwargs):
         return self
 
     def execute(self):

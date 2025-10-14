@@ -2,8 +2,8 @@ import os
 import sys
 import types
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from app.utils import supabase_adapter
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from backend.app.utils import supabase_adapter
 
 
 def test_legacy_supabase_module_used(monkeypatch):

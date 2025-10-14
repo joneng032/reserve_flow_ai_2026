@@ -1,11 +1,12 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-import database
-import main
 from fastapi import HTTPException
+
+import backend.main as main
+from backend import database
 
 
 def test_safe_db_call_maps_database_error():

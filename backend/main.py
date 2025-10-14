@@ -1,38 +1,22 @@
 import os
-import sys
 from typing import Any, Dict, List, Optional
 
 import uvicorn
-from app.services.token_service import TokenService
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, EmailStr
 
-# Decimal and uuid are not required at module import time in this file;
-# database layer handles numeric and UUID operations where needed.
+from backend.app.services.token_service import TokenService
 
-# Ensure the backend package directory is on sys.path so local imports work
-_backend_dir = os.path.dirname(__file__)
-if _backend_dir not in sys.path:
-    sys.path.insert(0, _backend_dir)
-
-# Import our database module (local import after sys.path injection)
-from database import db  # noqa: E402
-
-# DatabaseError may not be present in environments without supabase; import it safely
-try:
-    from database import DatabaseError
-except ImportError:
-    # Fallback DatabaseError for environments where database module does not
-    # expose that symbol (e.g., minimal test environments).
-    class DatabaseError(Exception):
-        pass
-
+# Import our database module (package-qualified imports are used across the
+# test-suite and application; tests insert the repo root on sys.path when
+# necessary so the package imports work during test collection.)
+from backend.database import DatabaseError, db
 
 # Import our new models (local import; kept after sys.path manipulation)
-from models import (  # noqa: E402
+from backend.models import (  # noqa: E402
     AuditLog,
     Category,
     CategoryCreate,
@@ -73,6 +57,10 @@ from models import (  # noqa: E402
     ProjectWithDetails,
     ReserveAnalysis,
 )
+
+# Decimal and uuid are not required at module import time in this file;
+# database layer handles numeric and UUID operations where needed.
+
 
 # Load environment variables
 load_dotenv()
@@ -239,9 +227,12 @@ def ensure_belongs_to_project(
     try:
         if str(getattr(resource, "project_id", "")) != project_id:
             raise HTTPException(status_code=404, detail=f"{resource_name} not found")
-    except (AttributeError, TypeError):
+    except (AttributeError, TypeError) as exc:
         # Normalise attribute and type-related errors into a 404 to avoid leaking internals
-        raise HTTPException(status_code=404, detail=f"{resource_name} not found")
+        # Preserve original exception chaining to aid debugging.
+        raise HTTPException(
+            status_code=404, detail=f"{resource_name} not found"
+        ) from exc
 
 
 def safe_db_call(fn, *args, **kwargs):
@@ -566,6 +557,9 @@ async def get_reserve_analysis(
 @app.get("/api/metro-multipliers", response_model=List[MetroMultiplier])
 async def get_metro_multipliers(current_user: dict = Depends(get_current_user)):
     """Get all metro multipliers for cost adjustments"""
+    # current_user param exists for consistency with other protected endpoints
+    # and to keep the route ready for future authorization checks.
+    _ = current_user
     return safe_db_call(db.get_metro_multipliers)
 
 
@@ -594,6 +588,9 @@ async def get_project_metro(
     project_id: str, current_user: dict = Depends(get_current_user)
 ):
     """Get metro area and multiplier for a project"""
+    # current_user included for parity with other protected endpoints;
+    # mark as used for linters while still passing the id to the DB call.
+    _ = current_user
     return safe_db_call(db.get_project_metro, project_id, current_user["id"])
 
 
@@ -605,6 +602,9 @@ async def get_component_catalog(
     current_user: dict = Depends(get_current_user), category: Optional[str] = None
 ):
     """Get the global component catalog"""
+    # current_user included for consistency with other protected endpoints
+    # and to keep the route ready for future authorization checks.
+    _ = current_user
     return safe_db_call(db.get_component_catalog, category)
 
 
@@ -660,6 +660,7 @@ async def get_project_meetings(
     limit: int = Query(100, ge=1, le=1000),
 ):
     """Get all meetings for a project"""
+    _ = current_user
     return safe_db_call(
         db.get_project_meetings,
         project_id,
@@ -834,6 +835,7 @@ async def get_project_media_files(
     limit: int = Query(100, ge=1, le=1000),
 ):
     """Get all media files for a project"""
+    _ = current_user
     return safe_db_call(
         db.get_project_media_files,
         project_id,
@@ -1019,6 +1021,7 @@ async def get_inspection(
     project_id: str, inspection_id: str, current_user: dict = Depends(get_current_user)
 ):
     """Get a specific inspection"""
+    _ = project_id
     inspection = safe_db_call(db.get_inspection, inspection_id, current_user["id"])
     ensure_belongs_to_project(inspection, project_id, "Inspection")
     return inspection
@@ -1072,6 +1075,7 @@ async def create_inspection_item(
         raise HTTPException(status_code=400, detail="Inspection ID mismatch")
 
     _ = project_id
+    _ = inspection_id
     inspection_item = safe_db_call(
         db.create_inspection_item, inspection_item_data, current_user["id"]
     )
@@ -1093,6 +1097,12 @@ async def get_inspection_items(
     limit: int = Query(100, ge=1, le=1000),
 ):
     """Get all inspection items for an inspection"""
+    # `project_id` provided for route parity; `inspection_id` is used to
+    # query items and validate ownership later when individual resources
+    # are accessed. Mark both as used to satisfy linters while keeping
+    # the route signatures stable.
+    _ = project_id
+    _ = inspection_id
     return safe_db_call(
         db.get_inspection_items,
         inspection_id,
@@ -1114,6 +1124,11 @@ async def get_inspection_item(
     current_user: dict = Depends(get_current_user),
 ):
     """Get a specific inspection item"""
+    # Keep project_id and inspection_id in signature for route parity;
+    # mark both used for linters. The ownership check below validates
+    # the inspection/project relationship.
+    _ = project_id
+    _ = inspection_id
     inspection_item = safe_db_call(db.get_inspection_item, item_id, current_user["id"])
     # For inspection items we normalize the resource name to help the client
     ensure_belongs_to_project(inspection_item, inspection_id, "Inspection item")
@@ -1133,6 +1148,7 @@ async def update_inspection_item(
 ):
     """Update an inspection item"""
     _ = project_id
+    _ = inspection_id
     inspection_item = safe_db_call(
         db.update_inspection_item, item_id, inspection_item_data, current_user["id"]
     )
@@ -1149,6 +1165,7 @@ async def delete_inspection_item(
 ):
     """Delete an inspection item"""
     _ = project_id
+    _ = inspection_id
     if safe_db_call(db.delete_inspection_item, item_id, current_user["id"]):
         return {"message": "Inspection item deleted successfully"}
     raise HTTPException(status_code=404, detail="Inspection item not found")

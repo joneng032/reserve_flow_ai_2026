@@ -8,15 +8,15 @@ from unittest.mock import Mock, patch
 import pytest
 
 # Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from database import Database, db
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from backend.database import Database, db
 
 
 @pytest.mark.unit
 class TestDatabaseInitialization:
     """Test database initialization"""
 
-    @patch("database.create_client")
+    @patch("backend.database.create_client")
     def test_database_initialization_success(self, mock_create_client):
         """Test successful database initialization"""
         mock_client = Mock()
@@ -71,7 +71,7 @@ class TestProjectOperations:
             }
 
             # Mock the ProjectCreate import
-            from models import ProjectCreate
+            from backend.models import ProjectCreate
 
             create_data = ProjectCreate(**project_data)
 
@@ -96,7 +96,7 @@ class TestComponentOperations:
             from decimal import Decimal
             from uuid import uuid4
 
-            from models import ComponentCreate
+            from backend.models import ComponentCreate
 
             component_data = ComponentCreate(
                 project_id=uuid4(),
@@ -148,7 +148,7 @@ class TestCategoryOperations:
         if db.client is None:
             from uuid import uuid4
 
-            from models import CategoryCreate
+            from backend.models import CategoryCreate
 
             category_data = CategoryCreate(project_id=uuid4(), name="Test Category")
 

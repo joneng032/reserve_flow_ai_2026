@@ -1,11 +1,11 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.repositories.auth_repository import AuthRepository
-from app.repositories.user_repository import UserRepository
-from app.services.auth_service import AuthService
-from app.services.token_service import TokenService
-from app.services.user_service import UserService
+from backend.app.repositories.auth_repository import AuthRepository
+from backend.app.repositories.user_repository import UserRepository
+from backend.app.services.auth_service import AuthService
+from backend.app.services.token_service import TokenService
+from backend.app.services.user_service import UserService
 
 # Configuración de seguridad
 # Use auto_error=False so we can standardize 401 + WWW-Authenticate responses
@@ -67,4 +67,4 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from e

@@ -9,14 +9,14 @@ import pytest
 from fastapi.testclient import TestClient
 
 # Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from uuid import uuid4
 
-from main import app, create_jwt_token
+from backend.main import app, create_jwt_token
 
 
-@pytest.fixture
-def client() -> Generator[TestClient, None, None]:
+@pytest.fixture(name="client")
+def client_fixture() -> Generator[TestClient, None, None]:
     """Test client fixture"""
     with TestClient(app) as test_client:
         yield test_client

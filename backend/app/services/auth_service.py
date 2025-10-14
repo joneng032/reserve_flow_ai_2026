@@ -1,9 +1,9 @@
 from typing import Optional, Tuple
 
-from app.models.auth_models import LoginRequest, TokenResponse
-from app.repositories.auth_repository import AuthRepository, IAuthRepository
-from app.repositories.user_repository import IUserRepository, UserRepository
-from app.services.token_service import TokenService
+from backend.app.models.auth_models import LoginRequest, TokenResponse
+from backend.app.repositories.auth_repository import AuthRepository, IAuthRepository
+from backend.app.repositories.user_repository import IUserRepository, UserRepository
+from backend.app.services.token_service import TokenService
 
 
 class AuthService:

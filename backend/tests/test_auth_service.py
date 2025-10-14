@@ -6,15 +6,15 @@ from typing import Any, Optional
 import pytest
 
 # Ensure test import resolution when running under tools that do not set PYTHONPATH
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from typing import cast
 
-from app.models.auth_models import LoginRequest
-from app.repositories.auth_repository import IAuthRepository
-from app.repositories.user_repository import IUserRepository
-from app.services.auth_service import AuthService
-from app.services.token_service import TokenService
+from backend.app.models.auth_models import LoginRequest
+from backend.app.repositories.auth_repository import IAuthRepository
+from backend.app.repositories.user_repository import IUserRepository
+from backend.app.services.auth_service import AuthService
+from backend.app.services.token_service import TokenService
 
 
 class FakeAuthRepo:

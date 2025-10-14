@@ -1,5 +1,5 @@
-from app.models.user_models import User
-from app.repositories.user_repository import UserRepository
+from backend.app.models.user_models import User
+from backend.app.repositories.user_repository import UserRepository
 
 
 def test_user_repository_basic_crud():

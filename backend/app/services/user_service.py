@@ -1,13 +1,14 @@
 from typing import List, Optional
 
-from app.models.user_models import User
-from app.repositories.user_repository import IUserRepository, UserRepository
+from backend.app.models.user_models import User
+from backend.app.repositories.user_repository import IUserRepository, UserRepository
 
 
 class UserService:
     """
     Servicio de usuarios usando el patrón Service
     """
+
     def __init__(self, user_repository: IUserRepository = None):
         self.user_repository = user_repository or UserRepository()
 

@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from functools import lru_cache
 
 from dotenv import load_dotenv
 from pydantic import ConfigDict
@@ -39,14 +39,13 @@ class Settings(BaseSettings):
 
 
 # Instancia singleton de configuración
-_settings: Optional[Settings] = None
-
-
+@lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    """Return the singleton Settings instance using an lru cache.
+
+    This replaces the previous global-backed implementation which
+    triggered static-analysis warnings about the use of `global`.
+    lru_cache provides the same memoization semantics with a clearer
+    intent and no global state mutation.
     """
-    Obtener la instancia singleton de configuración
-    """
-    global _settings
-    if _settings is None:
-        _settings = Settings()
-    return _settings
+    return Settings()

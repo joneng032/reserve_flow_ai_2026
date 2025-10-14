@@ -4,7 +4,7 @@ Some scripts historically called `from supabase import create_client` or
 referenced a top-level factory. This module exposes `create_supabase_client`
 so those call sites can be migrated incrementally.
 """
-from app.utils.supabase_adapter import create_supabase_client
+from backend.app.utils.supabase_adapter import create_supabase_client
 
 
 # Re-export under the familiar name

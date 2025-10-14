@@ -4,16 +4,17 @@ import sys
 import pytest
 
 # Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-import database
-from database import DatabaseError
 from fastapi.testclient import TestClient
-from main import app, create_jwt_token
+
+from backend import database
+from backend.database import DatabaseError
+from backend.main import app, create_jwt_token
 
 
-@pytest.fixture
-def client():
+@pytest.fixture(name="client")
+def client_fixture():
     with TestClient(app) as c:
         yield c
 

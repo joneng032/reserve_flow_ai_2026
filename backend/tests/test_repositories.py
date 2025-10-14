@@ -4,17 +4,17 @@ import sys
 import pytest
 
 # Ensure backend package root is on sys.path for imports when running tests
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from app.models.user_models import User
-from app.repositories.auth_repository import AuthRepository
-from app.repositories.user_repository import UserRepository
+from backend.app.models.user_models import User
+from backend.app.repositories.auth_repository import AuthRepository
+from backend.app.repositories.user_repository import UserRepository
 
 
 def test_user_repository_create_duplicate_raises_valueerror():
     repo = UserRepository()
     # Reset in-memory store for deterministic behavior
-    repo._users = {}
+    repo.clear_users()
 
     user = User(username="alice", email="alice@example.com")
     created = repo.create_user(user)
@@ -25,7 +25,7 @@ def test_user_repository_create_duplicate_raises_valueerror():
         repo.create_user(User(username="alice", email="alice2@example.com"))
 
 
-def test_user_repository_unexpected_error_propagates(monkeypatch):
+def test_user_repository_unexpected_error_propagates():
     repo = UserRepository()
 
     class BadStore:
@@ -33,13 +33,13 @@ def test_user_repository_unexpected_error_propagates(monkeypatch):
             raise RuntimeError("underlying store failure")
 
     # Replace internal store with one that raises
-    repo._users = BadStore()
+    repo.set_users_store(BadStore())
 
     with pytest.raises(RuntimeError):
         repo.get_user_by_username("anything")
 
 
-def test_user_repository_create_update_delete_propagate(monkeypatch):
+def test_user_repository_create_update_delete_propagate():
     repo = UserRepository()
 
     class BadStore:
@@ -55,7 +55,7 @@ def test_user_repository_create_update_delete_propagate(monkeypatch):
         def items(self):
             raise RuntimeError("store items failed")
 
-    repo._users = BadStore()
+    repo.set_users_store(BadStore())
 
     with pytest.raises(RuntimeError):
         repo.create_user(User(username="x", email="x@example.com"))
@@ -68,10 +68,10 @@ def test_user_repository_create_update_delete_propagate(monkeypatch):
         repo.delete_user(1)
 
 
-def test_auth_repository_credentials_and_propagation(monkeypatch):
+def test_auth_repository_credentials_and_propagation():
     repo = AuthRepository()
     # Use a clean credentials store
-    repo._credentials = {}
+    repo.clear_credentials()
 
     assert repo.validate_credentials("noone", "pw") is False
 
@@ -86,6 +86,6 @@ def test_auth_repository_credentials_and_propagation(monkeypatch):
         def get(self, key):
             raise RuntimeError("credentials backend error")
 
-    repo._credentials = BadCreds()
+    repo.set_credentials_store(BadCreds())
     with pytest.raises(RuntimeError):
         repo.validate_credentials("bob", "pw")

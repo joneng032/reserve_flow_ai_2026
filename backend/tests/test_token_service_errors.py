@@ -3,12 +3,12 @@ import sys
 
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from datetime import timedelta
 from typing import Any, Dict, Optional
 
-from app.services.token_service import ITokenStrategy, TokenService
+from backend.app.services.token_service import ITokenStrategy, TokenService
 
 
 def test_simple_jwt_detects_invalid_signature():
@@ -65,8 +65,9 @@ def test_protected_endpoint_returns_500_on_unexpected_verify_error(
     monkeypatch: pytest.MonkeyPatch,
 ):
     """If verify_jwt_token raises an unexpected RuntimeError, the API should return 500."""
-    import main
     from fastapi.testclient import TestClient
+
+    import backend.main as main
 
     def broken_verify(token: str):
         raise RuntimeError("crypto backend failure")

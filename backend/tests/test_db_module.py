@@ -3,9 +3,9 @@ import sys
 
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from database import Database
+from backend.database import Database
 
 
 def test_database_mock_mode_when_env_missing(monkeypatch):
@@ -43,7 +43,7 @@ def test_create_project_in_mock_mode(monkeypatch):
     db = Database()
     from uuid import uuid4
 
-    from app.models import ProjectCreate
+    from backend.models import ProjectCreate
 
     pid = str(uuid4())
     p = ProjectCreate(
@@ -64,7 +64,7 @@ def test_update_project_in_mock_mode(monkeypatch):
     db = Database()
     from uuid import uuid4
 
-    from app.models import ProjectUpdate
+    from backend.models import ProjectUpdate
 
     project_id = str(uuid4())
     profile_id = str(uuid4())

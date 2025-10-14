@@ -1,4 +1,4 @@
-from app.repositories.auth_repository import AuthRepository
+from backend.app.repositories.auth_repository import AuthRepository
 
 
 def test_auth_repository_validate_and_manage_credentials():
