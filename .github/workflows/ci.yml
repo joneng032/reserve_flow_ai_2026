@@ -16,6 +16,9 @@ jobs:
         use_simple_jwt: ["1", ""]
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Fetch full history so in-run git commands (tag/describe etc.) work
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
