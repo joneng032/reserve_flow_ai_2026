@@ -29,8 +29,43 @@ jobs:
           pip install -r requirements.txt
           # Install pytest-cov in CI to allow coverage enforcement
           pip install pytest-cov
+      - name: Dump git metadata (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: |
+          echo "=== GIT DIAGNOSTIC (non-Windows) ==="
+          git --version || true
+          echo "is shallow: $(git rev-parse --is-shallow-repository 2>/dev/null || true)"
+          git rev-parse --show-toplevel 2>/dev/null || true
+          git rev-parse HEAD 2>/dev/null || true
+          git show -s --format=%H --no-patch HEAD 2>/dev/null || true
+          git status --porcelain --branch 2>/dev/null || true
+          git log -5 --oneline 2>/dev/null || true
+          git remote -v 2>/dev/null || true
+          echo "GITHUB_SHA=${GITHUB_SHA}"
+          echo "GITHUB_REF=${GITHUB_REF}"
+          echo "GITHUB_WORKFLOW=${GITHUB_WORKFLOW}"
+          echo "matrix.use_simple_jwt=${{ matrix.use_simple_jwt }}"
+      - name: Dump git metadata (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Write-Host "=== GIT DIAGNOSTIC (Windows) ==="
+          git --version
+          try { $isShallow = git rev-parse --is-shallow-repository 2>$null; Write-Host "is shallow: $isShallow" } catch { Write-Host "is shallow: <error>" }
+          try { Write-Host (git rev-parse --show-toplevel 2>$null) } catch {}
+          try { Write-Host (git rev-parse HEAD 2>$null) } catch {}
+          try { Write-Host (git show -s --format=%H --no-patch HEAD 2>$null) } catch {}
+          try { git status --porcelain --branch 2>$null | Write-Host } catch {}
+          try { git log -5 --oneline 2>$null | Write-Host } catch {}
+          try { git remote -v 2>$null | Write-Host } catch {}
+          Write-Host "GITHUB_SHA=$env:GITHUB_SHA"
+          Write-Host "GITHUB_REF=$env:GITHUB_REF"
+          Write-Host "GITHUB_WORKFLOW=$env:GITHUB_WORKFLOW"
+          Write-Host "matrix.use_simple_jwt=${{ matrix.use_simple_jwt }}"
       - name: Run tests with coverage enforcement
         env:
           USE_SIMPLE_JWT: ${{ matrix.use_simple_jwt }}
+          # Enable git trace to capture any git subcommands invoked during tests
+          GIT_TRACE: "1"
         run: |
           python -m pytest backend/tests -q --cov=backend --cov-fail-under=80
