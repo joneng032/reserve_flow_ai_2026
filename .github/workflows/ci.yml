@@ -66,13 +66,31 @@ jobs:
           "GITHUB_REF=$env:GITHUB_REF" | Tee-Object -FilePath $diag -Append
           "GITHUB_WORKFLOW=$env:GITHUB_WORKFLOW" | Tee-Object -FilePath $diag -Append
           "matrix.use_simple_jwt=${{ matrix.use_simple_jwt }}" | Tee-Object -FilePath $diag -Append
-      - name: Run tests with coverage enforcement
+      - name: Run tests with coverage enforcement (non-Windows)
+        if: runner.os != 'Windows'
         env:
           USE_SIMPLE_JWT: ${{ matrix.use_simple_jwt }}
           # Enable git trace to capture any git subcommands invoked during tests
           GIT_TRACE: "1"
         run: |
-          python -m pytest backend/tests -q --cov=backend --cov-fail-under=80
+          set -o pipefail
+          mkdir -p diagnostics
+          DIAG_PYTEST_FILE="diagnostics/pytest-${{ matrix.os }}-${{ matrix.use_simple_jwt }}-py${{ matrix.python-version }}.log"
+          python -m pytest backend/tests -q --cov=backend --cov-fail-under=80 2>&1 | tee "$DIAG_PYTEST_FILE"
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then exit ${PIPESTATUS[0]}; fi
+
+      - name: Run tests with coverage enforcement (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          USE_SIMPLE_JWT: ${{ matrix.use_simple_jwt }}
+          GIT_TRACE: "1"
+        run: |
+          New-Item -ItemType Directory -Force -Path diagnostics | Out-Null
+          $diag = "diagnostics\\pytest-${{ matrix.os }}-${{ matrix.use_simple_jwt }}-py${{ matrix.python-version }}.log"
+          python -m pytest backend/tests -q --cov=backend --cov-fail-under=80 2>&1 | Tee-Object -FilePath $diag -Encoding UTF8
+          $exit = $LASTEXITCODE
+          if ($exit -ne 0) { exit $exit }
       - name: Upload diagnostics artifact
         if: always()
         uses: actions/upload-artifact@v4
