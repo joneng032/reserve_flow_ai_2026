@@ -46,7 +46,7 @@ def set_test_env_vars(monkeypatch):
 
 
 @pytest.fixture(autouse=True, scope="session")
-def neutralize_git_calls(monkeypatch, tmp_path_factory):
+def neutralize_git_calls(tmp_path_factory):
     """A defensive fallback for CI: neutralize calls to the `git` binary
     during test collection and test runs.
 
@@ -75,7 +75,8 @@ def neutralize_git_calls(monkeypatch, tmp_path_factory):
         git_stub.chmod(0o755)
 
     old_path = os.environ.get("PATH", "")
-    monkeypatch.setenv("PATH", str(fake_dir) + os.pathsep + old_path)
+    # Prepend the fake git directory to PATH for the whole test session.
+    os.environ["PATH"] = str(fake_dir) + os.pathsep + old_path
 
     # Helpers to detect git invocations
     def _is_git_cmd(cmd):
@@ -97,13 +98,15 @@ def neutralize_git_calls(monkeypatch, tmp_path_factory):
         return exe_name in ("git", "git.exe", "git.cmd", "git.bat")
 
     # Monkeypatch subprocess.run / check_output to short-circuit git
+    # Save originals so we can restore them at teardown
     _orig_run = subprocess.run
     _orig_check_output = subprocess.check_output
+    _orig_popen = subprocess.Popen
+    _orig_os_system = os.system
 
     def _fake_run(cmd, *a, **kw):
         try:
             if _is_git_cmd(cmd):
-                # Return a successful CompletedProcess with empty output
                 return subprocess.CompletedProcess(
                     cmd, 0, stdout=b"" if kw.get("capture_output") else None
                 )
@@ -119,7 +122,6 @@ def neutralize_git_calls(monkeypatch, tmp_path_factory):
             pass
         return _orig_check_output(cmd, *a, **kw)
 
-    # Minimal Popen-like dummy for git commands
     class _DummyPopen:
         def __init__(self, args, *a, **kw):
             self.args = args
@@ -141,8 +143,6 @@ def neutralize_git_calls(monkeypatch, tmp_path_factory):
         def kill(self):
             return None
 
-    _orig_popen = subprocess.Popen
-
     def _fake_popen(args, *a, **kw):
         try:
             if _is_git_cmd(args):
@@ -150,9 +150,6 @@ def neutralize_git_calls(monkeypatch, tmp_path_factory):
         except Exception:
             pass
         return _orig_popen(args, *a, **kw)
-
-    # Monkeypatch os.system to ignore git commands invoked via shell
-    _orig_os_system = os.system
 
     def _fake_system(cmd):
         try:
@@ -162,9 +159,18 @@ def neutralize_git_calls(monkeypatch, tmp_path_factory):
             pass
         return _orig_os_system(cmd)
 
-    monkeypatch.setattr(subprocess, "run", _fake_run)
-    monkeypatch.setattr(subprocess, "check_output", _fake_check_output)
-    monkeypatch.setattr(subprocess, "Popen", _fake_popen)
-    monkeypatch.setattr(os, "system", _fake_system)
+    # Apply our process-level patches for the session
+    subprocess.run = _fake_run
+    subprocess.check_output = _fake_check_output
+    subprocess.Popen = _fake_popen
+    os.system = _fake_system
 
-    yield
+    try:
+        yield
+    finally:
+        # Restore originals and PATH
+        subprocess.run = _orig_run
+        subprocess.check_output = _orig_check_output
+        subprocess.Popen = _orig_popen
+        os.system = _orig_os_system
+        os.environ["PATH"] = old_path
