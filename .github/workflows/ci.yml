@@ -32,36 +32,40 @@ jobs:
       - name: Dump git metadata (Linux / macOS)
         if: runner.os != 'Windows'
         run: |
-          echo "=== GIT DIAGNOSTIC (non-Windows) ==="
-          git --version || true
-          echo "is shallow: $(git rev-parse --is-shallow-repository 2>/dev/null || true)"
-          git rev-parse --show-toplevel 2>/dev/null || true
-          git rev-parse HEAD 2>/dev/null || true
-          git show -s --format=%H --no-patch HEAD 2>/dev/null || true
-          git status --porcelain --branch 2>/dev/null || true
-          git log -5 --oneline 2>/dev/null || true
-          git remote -v 2>/dev/null || true
-          echo "GITHUB_SHA=${GITHUB_SHA}"
-          echo "GITHUB_REF=${GITHUB_REF}"
-          echo "GITHUB_WORKFLOW=${GITHUB_WORKFLOW}"
-          echo "matrix.use_simple_jwt=${{ matrix.use_simple_jwt }}"
+          mkdir -p diagnostics
+          DIAG_FILE="diagnostics/git-diagnostics-${{ matrix.os }}-${{ matrix.use_simple_jwt }}-py${{ matrix.python-version }}.txt"
+          echo "=== GIT DIAGNOSTIC (non-Windows) ===" | tee "$DIAG_FILE"
+          git --version 2>&1 | tee -a "$DIAG_FILE" || true
+          echo "is shallow: $(git rev-parse --is-shallow-repository 2>/dev/null || true)" | tee -a "$DIAG_FILE"
+          git rev-parse --show-toplevel 2>/dev/null | tee -a "$DIAG_FILE" || true
+          git rev-parse HEAD 2>/dev/null | tee -a "$DIAG_FILE" || true
+          git show -s --format=%H --no-patch HEAD 2>/dev/null | tee -a "$DIAG_FILE" || true
+          git status --porcelain --branch 2>/dev/null | tee -a "$DIAG_FILE" || true
+          git log -5 --oneline 2>/dev/null | tee -a "$DIAG_FILE" || true
+          git remote -v 2>/dev/null | tee -a "$DIAG_FILE" || true
+          echo "GITHUB_SHA=${GITHUB_SHA}" | tee -a "$DIAG_FILE"
+          echo "GITHUB_REF=${GITHUB_REF}" | tee -a "$DIAG_FILE"
+          echo "GITHUB_WORKFLOW=${GITHUB_WORKFLOW}" | tee -a "$DIAG_FILE"
+          echo "matrix.use_simple_jwt=${{ matrix.use_simple_jwt }}" | tee -a "$DIAG_FILE"
       - name: Dump git metadata (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Write-Host "=== GIT DIAGNOSTIC (Windows) ==="
-          git --version
-          try { $isShallow = git rev-parse --is-shallow-repository 2>$null; Write-Host "is shallow: $isShallow" } catch { Write-Host "is shallow: <error>" }
-          try { Write-Host (git rev-parse --show-toplevel 2>$null) } catch {}
-          try { Write-Host (git rev-parse HEAD 2>$null) } catch {}
-          try { Write-Host (git show -s --format=%H --no-patch HEAD 2>$null) } catch {}
-          try { git status --porcelain --branch 2>$null | Write-Host } catch {}
-          try { git log -5 --oneline 2>$null | Write-Host } catch {}
-          try { git remote -v 2>$null | Write-Host } catch {}
-          Write-Host "GITHUB_SHA=$env:GITHUB_SHA"
-          Write-Host "GITHUB_REF=$env:GITHUB_REF"
-          Write-Host "GITHUB_WORKFLOW=$env:GITHUB_WORKFLOW"
-          Write-Host "matrix.use_simple_jwt=${{ matrix.use_simple_jwt }}"
+          New-Item -ItemType Directory -Force -Path diagnostics | Out-Null
+          $diag = "diagnostics\\git-diagnostics-${{ matrix.os }}-${{ matrix.use_simple_jwt }}-py${{ matrix.python-version }}.txt"
+          "=== GIT DIAGNOSTIC (Windows) ===" | Tee-Object -FilePath $diag -Append
+          git --version 2>&1 | Tee-Object -FilePath $diag -Append
+          try { $isShallow = git rev-parse --is-shallow-repository 2>$null; Write-Host "is shallow: $isShallow"; "is shallow: $isShallow" | Tee-Object -FilePath $diag -Append } catch { "is shallow: <error>" | Tee-Object -FilePath $diag -Append }
+          try { git rev-parse --show-toplevel 2>$null | Tee-Object -FilePath $diag -Append } catch {}
+          try { git rev-parse HEAD 2>$null | Tee-Object -FilePath $diag -Append } catch {}
+          try { git show -s --format=%H --no-patch HEAD 2>$null | Tee-Object -FilePath $diag -Append } catch {}
+          try { git status --porcelain --branch 2>$null | Tee-Object -FilePath $diag -Append } catch {}
+          try { git log -5 --oneline 2>$null | Tee-Object -FilePath $diag -Append } catch {}
+          try { git remote -v 2>$null | Tee-Object -FilePath $diag -Append } catch {}
+          "GITHUB_SHA=$env:GITHUB_SHA" | Tee-Object -FilePath $diag -Append
+          "GITHUB_REF=$env:GITHUB_REF" | Tee-Object -FilePath $diag -Append
+          "GITHUB_WORKFLOW=$env:GITHUB_WORKFLOW" | Tee-Object -FilePath $diag -Append
+          "matrix.use_simple_jwt=${{ matrix.use_simple_jwt }}" | Tee-Object -FilePath $diag -Append
       - name: Run tests with coverage enforcement
         env:
           USE_SIMPLE_JWT: ${{ matrix.use_simple_jwt }}
@@ -69,3 +73,9 @@ jobs:
           GIT_TRACE: "1"
         run: |
           python -m pytest backend/tests -q --cov=backend --cov-fail-under=80
+      - name: Upload diagnostics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-diagnostics-${{ matrix.os }}-${{ matrix.use_simple_jwt }}
+          path: diagnostics
