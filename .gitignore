@@ -45,3 +45,9 @@ frontend/package-lock.json
 /frontend/coverage/
 .coverage
 .cache
+
+# Local python virtualenv
+.venv/
+
+# Embedded CodeMachine metadata
+.codemachine/
