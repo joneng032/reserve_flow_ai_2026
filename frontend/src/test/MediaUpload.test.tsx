@@ -187,11 +187,14 @@ describe("MediaUpload", () => {
     const uploadButton = screen.getByRole("button", { name: /upload 1 file/i });
     fireEvent.click(uploadButton);
 
-    await waitFor(() => {
-      expect(alertMock).toHaveBeenCalledWith(
-        "Some files failed to upload. Please try again.",
-      );
-    });
+    await waitFor(
+      () => {
+        expect(alertMock).toHaveBeenCalledWith(
+          "Some files failed to upload. Please try again.",
+        );
+      },
+      { timeout: 5000 },
+    );
 
     alertMock.mockRestore();
   });

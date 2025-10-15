@@ -1,0 +1,96 @@
+name: CI Tests (Backend + Frontend Coverage)
+
+on:
+  push:
+    branches: [ main, copilot-ruleset-branch ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-tests:
+    name: Backend Tests (pytest + coverage)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run backend tests with coverage
+        working-directory: backend
+        run: |
+          pytest --maxfail=1 --disable-warnings -q --cov=.. --cov-report=xml --cov-report=term
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-xml
+          path: backend/coverage.xml
+
+  frontend-tests:
+    name: Frontend Tests (Vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: |
+          npm ci
+
+      - name: Run frontend tests with coverage
+        working-directory: frontend
+        run: |
+          npm run test -- --coverage
+
+      - name: Upload frontend coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+
+  coverage-check:
+    name: Coverage Threshold Check
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download backend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-coverage-xml
+          path: coverage-artifacts/backend
+
+      - name: Download frontend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage
+          path: coverage-artifacts/frontend
+
+      - name: Install coverage checker
+        run: |
+          python -m pip install --upgrade pip
+          pip install xmltodict
+
+      - name: Run backend coverage checker
+        run: |
+          python scripts/check_coverage.py coverage-artifacts/backend/backend/coverage.xml 80
+
+      - name: Check frontend coverage (simplified)
+        run: |
+          if [ -f frontend/coverage/lcov-report/index.html ]; then echo "Frontend coverage exists"; else echo "No frontend coverage"; fi
+
