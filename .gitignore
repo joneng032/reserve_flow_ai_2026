@@ -50,4 +50,4 @@ frontend/package-lock.json
 .venv/
 
 # Embedded CodeMachine metadata
-.codemachine/
+# .codemachine/

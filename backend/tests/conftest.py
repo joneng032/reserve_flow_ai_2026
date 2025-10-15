@@ -1,3 +1,201 @@
+import uuid
+from types import SimpleNamespace
+
+
+def uuid4_str():
+    return str(uuid.uuid4())
+
+
+class FakeResponse:
+    def __init__(self, data):
+        self.data = data
+
+
+class FakeQuery:
+    def __init__(self, data=None, table_name=None, client=None):
+        # data should be a list or None
+        self._data = data or []
+        self._table = table_name
+        self._client = client
+
+    def select(self, *_a, **_kw):
+        return self
+
+    def eq(self, *_a, **_kw):
+        # Simple equality filter emulation for common query patterns.
+        # Usage: .eq(column, value)
+        try:
+            if len(_a) >= 2:
+                col, val = _a[0], _a[1]
+            elif len(_a) == 1 and "value" in _kw:
+                col, val = _a[0], _kw["value"]
+            else:
+                return self
+
+            def match(row):
+                if not isinstance(row, dict):
+                    return False
+                # handle nested access like 'inspections.projects.profile_id'
+                if "." in col:
+                    parts = col.split(".")
+                    curr = row
+                    for p in parts:
+                        if not isinstance(curr, dict):
+                            return False
+                        next_val = curr.get(p)
+                        if next_val is None and self._client:
+                            # Attempt to emulate a join: if p names a related table that exists
+                            # in client.table_data, try to find the related row using a foreign key
+                            if p in self._client.table_data:
+                                related_table = p
+                                # common fk names: project_id, inspection_id, etc.
+                                # prefer '<related_table[:-1]>_id' when plural form
+                                fk_candidates = []
+                                if related_table.endswith("s"):
+                                    fk_candidates.append(related_table[:-1] + "_id")
+                                fk_candidates.append(related_table + "_id")
+                                fk_candidates.extend([k for k in curr.keys() if k.endswith("_id")])
+
+                                fk = None
+                                for fk_name in fk_candidates:
+                                    fk = curr.get(fk_name)
+                                    if fk:
+                                        break
+                                if not fk:
+                                    return False
+                                # lookup related row by id
+                                rel_rows = self._client.table_data.get(related_table, [])
+                                rel = None
+                                for rr in rel_rows:
+                                    if rr.get("id") == fk:
+                                        rel = rr
+                                        break
+                                if rel is None:
+                                    return False
+                                curr = rel
+                                continue
+                            return False
+                        curr = next_val
+                    try:
+                        return str(curr) == str(val)
+                    except Exception:
+                        return curr == val
+                # direct equality
+                try:
+                    return str(row.get(col)) == str(val)
+                except Exception:
+                    return row.get(col) == val
+
+            self._data = [r for r in (self._data or []) if match(r)]
+        except Exception:
+            # On any unexpected shape, leave data unchanged to avoid test crashes
+            pass
+        return self
+
+    def order(self, *_a, **_kw):
+        return self
+
+    def range(self, *_a, **_kw):
+        return self
+
+    def insert(self, data):
+        # simulate inserting: merge with sensible defaults based on table
+        row = dict(data)
+        # provide minimal defaults to satisfy Pydantic models
+        if self._table == "media_files":
+            row.setdefault("file_path", "mock/path.jpg")
+            row.setdefault("file_type", "image")
+            row.setdefault("mime_type", "image/jpeg")
+            row.setdefault("file_size", 0)
+            row.setdefault("project_id", row.get("project_id", "mock-project"))
+        if self._table == "interviews":
+            row.setdefault("interview_type", "mock")
+            row.setdefault("project_id", row.get("project_id", "mock-project"))
+        if self._table == "components":
+            row.setdefault("name", row.get("name", "Unnamed Component"))
+            row.setdefault("category", row.get("category", None))
+            row.setdefault("base_cost", row.get("base_cost", 0))
+            row.setdefault("useful_life", row.get("useful_life", None))
+        if self._table == "inspection_items":
+            row.setdefault("item_type", "mock")
+            row.setdefault("inspection_id", row.get("inspection_id", "mock-insp"))
+        if self._table == "evidence":
+            row.setdefault("project_id", row.get("project_id", "mock-project"))
+            row.setdefault("evidence_type", row.get("evidence_type", "photo"))
+        # ensure an id is present
+        row.setdefault("id", str(uuid.uuid4()))
+        self._data = [row]
+        return self
+
+    def update(self, data):
+        # simulate update: merge incoming data onto existing row if present
+        if self._data and isinstance(self._data, list) and len(self._data) > 0 and isinstance(self._data[0], dict):
+            merged = dict(self._data[0])
+            merged.update(data)
+            # ensure minimal defaults similar to insert
+            if self._table == "media_files":
+                merged.setdefault("file_path", "mock/path.jpg")
+                merged.setdefault("file_type", "image")
+                merged.setdefault("mime_type", "image/jpeg")
+                merged.setdefault("file_size", 0)
+            if self._table == "interviews":
+                merged.setdefault("interview_type", "mock")
+            if self._table == "inspection_items":
+                merged.setdefault("item_type", "mock")
+
+            self._data = [merged]
+        else:
+            self._data = [data]
+        return self
+
+    def delete(self):
+        # simulate delete: keep existing _data as the rows that would be returned
+        return self
+
+    def execute(self):
+        # ensure existing rows have minimal defaults for model construction
+        normalized = []
+        for row in (self._data or []):
+            if not isinstance(row, dict):
+                normalized.append(row)
+                continue
+            r = dict(row)
+            # set sensible defaults based on table
+            if self._table == "media_files":
+                r.setdefault("file_path", "mock/path.jpg")
+                r.setdefault("file_type", "image")
+                r.setdefault("mime_type", "image/jpeg")
+                r.setdefault("file_size", 0)
+                r.setdefault("project_id", r.get("project_id", "mock-project"))
+            if self._table == "interviews":
+                r.setdefault("interview_type", "mock")
+                r.setdefault("project_id", r.get("project_id", "mock-project"))
+            if self._table == "components":
+                r.setdefault("name", r.get("name", "Unnamed Component"))
+                r.setdefault("category", r.get("category", None))
+                r.setdefault("base_cost", r.get("base_cost", 0))
+                r.setdefault("useful_life", r.get("useful_life", None))
+            if self._table == "inspection_items":
+                r.setdefault("item_type", "mock")
+                r.setdefault("inspection_id", r.get("inspection_id", "mock-insp"))
+            if self._table == "evidence":
+                r.setdefault("project_id", r.get("project_id", "mock-project"))
+                r.setdefault("evidence_type", r.get("evidence_type", "photo"))
+            r.setdefault("id", str(uuid.uuid4()))
+            normalized.append(r)
+
+        return FakeResponse(normalized)
+
+
+class FakeClient:
+    def __init__(self, table_data=None):
+        # table_data: dict mapping table name to list of rows
+        self.table_data = table_data or {}
+
+    def table(self, name):
+        data = self.table_data.get(name, [])
+        return FakeQuery(data, table_name=name, client=self)
+
 import os
 import subprocess
 import sys
