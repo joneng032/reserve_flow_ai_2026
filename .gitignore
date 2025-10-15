@@ -39,3 +39,9 @@ ENV/
 Thumbs.db 
 .vercel
 frontend/package-lock.json
+
+# Generated coverage artifacts
+/backend/coverage.xml
+/frontend/coverage/
+.coverage
+.cache
