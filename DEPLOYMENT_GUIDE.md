@@ -1,143 +1,156 @@
-# Guía de Despliegue en Vercel
+# Vercel Deployment Guide
 
-## Configuración del Proyecto
+## Project Configuration
 
-Este proyecto está configurado para desplegarse en Vercel con:
-- **Backend**: FastAPI con Python
+This project is configured to be deployed on Vercel with:
+
+- **Backend**: FastAPI with Python
 - **Frontend**: React + Vite + TypeScript
 
-## Pasos para el Despliegue
+## Deployment Steps
 
-### 1. Preparación del Proyecto
+### 1. Project Preparation
 
-Asegúrate de que tu proyecto esté en un repositorio de GitHub, GitLab o Bitbucket.
+Make sure your project is in a GitHub, GitLab, or Bitbucket repository.
 
-### 2. Configuración de Variables de Entorno
+### 2. Environment Variable Configuration
 
-En el dashboard de Vercel, configura las siguientes variables de entorno:
+In the Vercel dashboard, configure the following environment variables:
 
 ```bash
-SUPABASE_URL=tu_url_de_supabase
-SUPABASE_ANON_KEY=tu_clave_anonima_de_supabase
-FRONTEND_URL=https://tu-app.vercel.app
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anonymous_key
+FRONTEND_URL=https://your-app.vercel.app
 HOST=0.0.0.0
 PORT=3000
 ```
 
-### 3. Despliegue en Vercel
+### 3. Deploy to Vercel
 
-#### Opción A: Despliegue desde el Dashboard de Vercel
+#### Option A: Deploy from Vercel Dashboard
 
-1. Ve a [vercel.com](https://vercel.com) y crea una cuenta
-2. Haz clic en "New Project"
-3. Importa tu repositorio de GitHub/GitLab/Bitbucket
-4. Vercel detectará automáticamente la configuración
-5. Configura las variables de entorno en la sección "Environment Variables"
-6. Haz clic en "Deploy"
+1. Go to [vercel.com](https://vercel.com) and create an account
+2. Click "New Project"
+3. Import your GitHub/GitLab/Bitbucket repository
+4. Vercel will automatically detect the configuration
+5. Configure environment variables in the "Environment Variables" section
+6. Click "Deploy"
 
-#### Opción B: Despliegue desde la Línea de Comandos
+#### Option B: Deploy from Command Line
 
-1. Instala Vercel CLI:
+1. Install Vercel CLI:
+
 ```bash
 npm i -g vercel
 ```
 
-2. Inicia sesión:
+2. Login:
+
 ```bash
 vercel login
 ```
 
-3. Despliega el proyecto:
+3. Deploy the project:
+
 ```bash
 vercel
 ```
 
-### 4. Configuración de Supabase
+### 4. Supabase Configuration
 
-Asegúrate de que tu proyecto de Supabase esté configurado correctamente:
+Make sure your Supabase project is configured correctly:
 
-1. Crea un proyecto en [supabase.com](https://supabase.com)
-2. Obtén las credenciales de tu proyecto:
-   - URL del proyecto
-   - Clave anónima (anon key)
-3. Configura las variables de entorno en Vercel con estos valores
+1. Create a project in [supabase.com](https://supabase.com)
+2. Get your project credentials:
+   - Project URL
+   - Anonymous key (anon key)
+3. Configure environment variables in Vercel with these values
 
-### 5. Verificación del Despliegue
+### 5. Deployment Verification
 
-Una vez desplegado, verifica que:
+Once deployed, verify that:
 
-1. **Backend funcione**: Visita `https://tu-app.vercel.app/api/health`
-2. **Frontend funcione**: Visita `https://tu-app.vercel.app`
-3. **Autenticación funcione**: Prueba registrar e iniciar sesión
+1. **Backend works**: Visit `https://your-app.vercel.app/api/health`
+2. **Frontend works**: Visit `https://your-app.vercel.app`
+3. **Authentication works**: Try registering and logging in
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 webapp_python/
 ├── backend/
-│   ├── main.py              # Aplicación FastAPI
-│   ├── requirements.txt      # Dependencias de Python
+│   ├── main.py              # FastAPI application
+│   ├── requirements.txt      # Python dependencies
 │   └── api/
-│       └── index.py         # Punto de entrada para Vercel
+│       └── index.py         # Entry point for Vercel
 ├── frontend/
-│   ├── package.json         # Dependencias de Node.js
-│   ├── vite.config.ts       # Configuración de Vite
-│   └── vercel.json          # Configuración específica del frontend
-├── vercel.json              # Configuración principal de Vercel
-└── env.example              # Variables de entorno de ejemplo
+│   ├── package.json         # Node.js dependencies
+│   ├── vite.config.ts       # Vite configuration
+│   └── vercel.json          # Frontend-specific configuration
+├── vercel.json              # Main Vercel configuration
+└── env.example              # Example environment variables
 ```
 
-## Configuración de Rutas
+## Route Configuration
 
-El archivo `vercel.json` está configurado para:
+The `vercel.json` file is configured to:
 
-- **Rutas `/api/*`**: Se dirigen al backend (FastAPI)
-- **Rutas `/*`**: Se dirigen al frontend (React)
+- **Routes `/api/*`**: Directed to backend (FastAPI)
+- **Routes `/*`**: Directed to frontend (React)
 
-## Solución de Problemas Comunes
+## Common Troubleshooting Issues
 
-### Error: "Module not found"
-- Verifica que todas las dependencias estén en `requirements.txt` (backend) y `package.json` (frontend)
-
-### Error de CORS
-- Asegúrate de que `FRONTEND_URL` esté configurado correctamente
-- Verifica que las rutas de CORS incluyan tu dominio de Vercel
-
-### Error de Supabase
-- Verifica que `SUPABASE_URL` y `SUPABASE_ANON_KEY` estén configurados
-- Asegúrate de que tu proyecto de Supabase esté activo
-
-### Error de Build
-- Verifica que el comando de build en `package.json` sea correcto
-- Revisa los logs de build en el dashboard de Vercel
-
-## Comandos Útiles
+### Build Error
 
 ```bash
-# Desplegar a producción
-vercel --prod
-
-# Desplegar a preview
-vercel
-
-# Ver logs
-vercel logs
-
-# Listar deployments
-vercel ls
+# Check build logs in Vercel dashboard
 ```
 
-## Notas Importantes
+### CORS Error
 
-1. **Variables de Entorno**: Nunca subas archivos `.env` al repositorio
-2. **Supabase**: Asegúrate de que tu proyecto de Supabase esté en la misma región que tu despliegue
-3. **CORS**: Las configuraciones de CORS están optimizadas para Vercel
-4. **Build**: El frontend se construye automáticamente durante el despliegue
+- Make sure `FRONTEND_URL` is configured correctly
+- Check that CORS routes include your Vercel domain
 
-## Soporte
+### Supabase Error
 
-Si encuentras problemas:
-1. Revisa los logs en el dashboard de Vercel
-2. Verifica las variables de entorno
-3. Prueba el proyecto localmente antes del despliegue
-4. Consulta la documentación de Vercel y Supabase 
+- Verify that `SUPABASE_URL` and `SUPABASE_ANON_KEY` are configured
+- Make sure your Supabase project is active
+
+### Build Error
+
+- Check for missing dependencies in `requirements.txt` (backend) and `package.json` (frontend)
+
+## Useful Commands
+
+```bash
+# Deploy to production
+vercel --prod
+
+# View environment variables
+vercel env ls
+
+# View deployment logs
+vercel logs
+
+# List deployments
+vercel ls
+
+# Inspect latest deployment
+vercel inspect
+```
+
+## Important Notes
+
+1. **Environment Variables**: Never upload `.env` files to the repository
+2. **Supabase**: Make sure your Supabase project is in the same region as your deployment
+3. **CORS**: CORS configurations are optimized for Vercel
+4. **Build**: Frontend builds automatically during deployment
+
+## Support
+
+If you encounter problems:
+
+1. Check logs in the Vercel dashboard
+2. Verify environment variables
+3. Test the project locally before deployment
+4. Consult Vercel and Supabase documentation

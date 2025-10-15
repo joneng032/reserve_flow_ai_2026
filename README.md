@@ -4,7 +4,7 @@
 
 <div align="center">
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/godie007/webapp-python)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/joneng032/reserve_flow_ai_2026)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -17,8 +17,6 @@
 
 ### 💝 Support this Project
 
-[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/godie007)
-[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?style=flat&logo=youtube)](https://www.youtube.com/@godie007)
 
 *If this template helps you, consider supporting my work! ☕*
 
@@ -144,8 +142,8 @@
 
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/godie007/webapp-python.git
-cd webapp-python
+git clone https://github.com/joneng032/reserve_flow_ai_2026.git
+cd reserve_flow_ai_2026
 ```
 
 ### **2. Configure Environment Variables**
@@ -398,14 +396,14 @@ If this template has been helpful, please consider:
 
 ### 💖 Support the Project
 
-[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/godie007)
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/joneng032)
 
-**Learn more:** Subscribe to my [YouTube Channel](https://www.youtube.com/@godie007) for web development tutorials
+**Learn more:** Subscribe to my [YouTube Channel](https://www.youtube.com/@joneng032) for web development tutorials
 
 ---
 
-**Developed with ❤️ by [@godie007](https://github.com/godie007)**
+**Developed with ❤️ by [@joneng032](https://github.com/joneng032)**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/godie007/webapp-python)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/joneng032/reserve_flow_ai_2026)
 
 </div>

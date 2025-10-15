@@ -37,6 +37,7 @@ This guide is designed for developers who want to understand, extend, or contrib
 ### **System Prerequisites**
 
 #### **Required Software**
+
 ```bash
 # Node.js (LTS version)
 node --version  # >= 18.0.0
@@ -52,6 +53,7 @@ npm --version  # >= 8.0.0
 ```
 
 #### **Recommended Tools**
+
 - **VS Code** with extensions:
   - TypeScript and JavaScript Language Features
   - Python
@@ -64,9 +66,10 @@ npm --version  # >= 8.0.0
 ### **Initial Setup**
 
 #### **1. Clone and Configure**
+
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/webapp-python.git
+git clone https://github.com/joneng032/reserve_flow_ai_2026.git
 cd webapp-python
 
 # Install frontend dependencies
@@ -79,6 +82,7 @@ pip install -r requirements.txt
 ```
 
 #### **2. Environment Variables**
+
 ```bash
 # Backend
 cp backend/env.example backend/.env
@@ -88,6 +92,7 @@ cp frontend/.env.example frontend/.env
 ```
 
 #### **3. Configure Database**
+
 ```bash
 # Create local database (optional)
 createdb webapp_python_dev
@@ -101,6 +106,7 @@ createdb webapp_python_dev
 ### **Development Scripts**
 
 #### **Quick Start**
+
 ```bash
 # Start both frontend and backend
 ./start-dev.ps1  # Windows PowerShell
@@ -108,6 +114,7 @@ createdb webapp_python_dev
 ```
 
 #### **Manual Start**
+
 ```bash
 # Terminal 1 - Backend
 cd backend
@@ -121,6 +128,7 @@ npm run dev
 ## 🏗️ Code Architecture
 
 ### **Project Structure**
+
 ```
 webapp-python/
 ├── frontend/                 # React + TypeScript + Vite
@@ -145,6 +153,7 @@ webapp-python/
 ### **Technology Stack**
 
 #### **Frontend**
+
 - **React 19** - UI library
 - **TypeScript** - Type safety
 - **Vite** - Build tool and dev server
@@ -154,6 +163,7 @@ webapp-python/
 - **React Hot Toast** - Notifications
 
 #### **Backend**
+
 - **FastAPI** - Web framework
 - **Python 3.9+** - Programming language
 - **Pydantic** - Data validation
@@ -166,17 +176,21 @@ webapp-python/
 ### **Application Screenshots**
 
 #### **Home Page**
+
 ![Home Page Interface](images/homePage.png)
 
 #### **Login Page**
+
 ![Login Form](images/login.png)
 
 #### **Registration Page**
+
 ![Registration Form](images/register.png)
 
 ### **Component Structure**
 
 #### **Component Guidelines**
+
 ```typescript
 // ✅ Good component structure
 interface ComponentProps {
@@ -195,6 +209,7 @@ export const Component: React.FC<ComponentProps> = ({ title, onAction }) => {
 ```
 
 #### **State Management**
+
 ```typescript
 // Use React hooks for local state
 const [data, setData] = useState<DataType[]>([]);
@@ -207,6 +222,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 ### **Styling Guidelines**
 
 #### **Tailwind CSS Classes**
+
 ```typescript
 // ✅ Consistent class ordering
 <div className="
@@ -218,6 +234,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 ```
 
 #### **Responsive Design**
+
 ```typescript
 // Mobile-first approach
 <div className="
@@ -229,22 +246,24 @@ const AuthContext = createContext<AuthContextType | null>(null);
 ### **API Integration**
 
 #### **Service Layer**
+
 ```typescript
 // services/api.ts
 export const apiService = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post('/login', credentials);
+    const response = await apiClient.post("/login", credentials);
     return response.data;
   },
-  
+
   register: async (userData: RegisterRequest): Promise<RegisterResponse> => {
-    const response = await apiClient.post('/register', userData);
+    const response = await apiClient.post("/register", userData);
     return response.data;
-  }
+  },
 };
 ```
 
 #### **Error Handling**
+
 ```typescript
 // Handle API errors consistently
 try {
@@ -264,6 +283,7 @@ try {
 ### **FastAPI Structure**
 
 #### **Main Application**
+
 ```python
 # main.py
 from fastapi import FastAPI
@@ -282,6 +302,7 @@ app.add_middleware(
 ```
 
 #### **Model Definitions**
+
 ```python
 # models/user.py
 from pydantic import BaseModel, EmailStr
@@ -302,6 +323,7 @@ class UserResponse(BaseModel):
 ### **Authentication System**
 
 #### **JWT Implementation**
+
 ```python
 # utils/auth.py
 import jwt
@@ -325,6 +347,7 @@ def verify_token(token: str):
 ```
 
 #### **Protected Routes**
+
 ```python
 # dependencies.py
 from fastapi import Depends, HTTPException, status
@@ -338,7 +361,7 @@ async def get_current_user(token: str = Depends(security)):
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         payload = verify_token(token.credentials)
         user_id: str = payload.get("sub")
@@ -346,13 +369,14 @@ async def get_current_user(token: str = Depends(security)):
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    
+
     return {"user_id": user_id}
 ```
 
 ### **Database Integration**
 
 #### **Supabase Setup**
+
 ```python
 # database.py
 from supabase import create_client, Client
@@ -369,11 +393,21 @@ def get_user_by_email(email: str):
     return supabase.table("users").select("*").eq("email", email).execute()
 ```
 
+#### Migration note: gotrue -> supabase_auth
+
+The project currently uses the `supabase` client which brings `gotrue` for
+auth. The `gotrue` package is deprecated. To prepare for a migration the
+codebase centralizes client creation in `backend/app/utils/supabase_adapter.py`.
+When upgrading to `supabase_auth` the adapter is the single place that needs
+to be updated to adapt the new client API. See `backend/app/utils/supabase_adapter.py`
+for the compatibility shim and migration tips.
+
 ## 📊 Database
 
 ### **Schema Design**
 
 #### **Users Table**
+
 ```sql
 CREATE TABLE users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -387,6 +421,7 @@ CREATE TABLE users (
 ```
 
 #### **Sessions Table**
+
 ```sql
 CREATE TABLE sessions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -400,6 +435,7 @@ CREATE TABLE sessions (
 ### **Migrations**
 
 #### **Using Supabase**
+
 ```bash
 # Apply migrations through Supabase dashboard
 # Or use Supabase CLI
@@ -411,6 +447,7 @@ supabase db push
 ### **Frontend Testing**
 
 #### **Unit Tests**
+
 ```typescript
 // components/__tests__/LoginForm.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -426,7 +463,7 @@ describe('LoginForm', () => {
   test('submits form with correct data', async () => {
     const mockSubmit = jest.fn();
     render(<LoginForm onSubmit={mockSubmit} />);
-    
+
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'test@example.com' },
     });
@@ -434,7 +471,7 @@ describe('LoginForm', () => {
       target: { value: 'password123' },
     });
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     expect(mockSubmit).toHaveBeenCalledWith({
       email: 'test@example.com',
       password: 'password123',
@@ -444,20 +481,21 @@ describe('LoginForm', () => {
 ```
 
 #### **Integration Tests**
+
 ```typescript
 // services/__tests__/api.test.ts
-import { apiService } from '../api';
+import { apiService } from "../api";
 
-describe('API Service', () => {
-  test('login returns user data', async () => {
+describe("API Service", () => {
+  test("login returns user data", async () => {
     const credentials = {
-      email: 'test@example.com',
-      password: 'password123'
+      email: "test@example.com",
+      password: "password123",
     };
-    
+
     const result = await apiService.login(credentials);
-    expect(result).toHaveProperty('access_token');
-    expect(result).toHaveProperty('user');
+    expect(result).toHaveProperty("access_token");
+    expect(result).toHaveProperty("user");
   });
 });
 ```
@@ -465,6 +503,7 @@ describe('API Service', () => {
 ### **Backend Testing**
 
 #### **Unit Tests**
+
 ```python
 # test_auth.py
 import pytest
@@ -490,6 +529,7 @@ def test_login_invalid_credentials():
 ```
 
 #### **Integration Tests**
+
 ```python
 # test_api_integration.py
 def test_full_auth_flow():
@@ -500,14 +540,14 @@ def test_full_auth_flow():
         "username": "newuser"
     })
     assert register_response.status_code == 200
-    
+
     # 2. Login
     login_response = client.post("/api/login", json={
         "email": "newuser@example.com",
         "password": "password123"
     })
     assert login_response.status_code == 200
-    
+
     # 3. Access protected endpoint
     token = login_response.json()["access_token"]
     protected_response = client.get(
@@ -522,6 +562,7 @@ def test_full_auth_flow():
 ### **Frontend Debugging**
 
 #### **React DevTools**
+
 ```bash
 # Install React Developer Tools browser extension
 # Use Components tab to inspect component tree
@@ -529,10 +570,11 @@ def test_full_auth_flow():
 ```
 
 #### **Console Debugging**
+
 ```typescript
 // Add debug logs
-console.log('Component rendered with props:', props);
-console.log('API response:', response.data);
+console.log("Component rendered with props:", props);
+console.log("API response:", response.data);
 
 // Use debugger statement
 debugger; // Browser will pause here
@@ -541,6 +583,7 @@ debugger; // Browser will pause here
 ### **Backend Debugging**
 
 #### **FastAPI Debug Mode**
+
 ```python
 # Enable debug mode
 if __name__ == "__main__":
@@ -549,6 +592,7 @@ if __name__ == "__main__":
 ```
 
 #### **Logging**
+
 ```python
 import logging
 
@@ -565,12 +609,14 @@ logger.error("Database connection failed")
 ### **API Testing**
 
 #### **Swagger UI**
+
 ```bash
 # Access interactive API documentation
 http://localhost:3000/docs
 ```
 
 #### **Postman Collection**
+
 ```json
 {
   "info": {
@@ -603,6 +649,7 @@ http://localhost:3000/docs
 ### **Frontend Build**
 
 #### **Production Build**
+
 ```bash
 # Build for production
 cd frontend
@@ -613,6 +660,7 @@ npm run preview
 ```
 
 #### **Build Optimization**
+
 ```typescript
 // vite.config.ts
 export default defineConfig({
@@ -620,18 +668,19 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          utils: ['axios', 'react-hook-form']
-        }
-      }
-    }
-  }
+          vendor: ["react", "react-dom"],
+          utils: ["axios", "react-hook-form"],
+        },
+      },
+    },
+  },
 });
 ```
 
 ### **Backend Deployment**
 
 #### **Vercel Configuration**
+
 ```json
 // vercel.json
 {
@@ -652,6 +701,7 @@ export default defineConfig({
 ```
 
 #### **Environment Variables**
+
 ```bash
 # Production environment variables
 JWT_SECRET_KEY=your-super-secure-production-secret
@@ -665,10 +715,11 @@ SUPABASE_KEY=your-supabase-anon-key
 ### **Development Workflow**
 
 #### **1. Fork and Clone**
+
 ```bash
 # Fork the repository on GitHub
 # Clone your fork
-git clone https://github.com/your-username/webapp-python.git
+git clone https://github.com/joneng032/reserve_flow_ai_2026.git
 cd webapp-python
 
 # Add upstream remote
@@ -676,6 +727,7 @@ git remote add upstream https://github.com/original-owner/webapp-python.git
 ```
 
 #### **2. Create Feature Branch**
+
 ```bash
 # Create and switch to feature branch
 git checkout -b feature/your-feature-name
@@ -687,6 +739,7 @@ git commit -m "feat: add user profile management"
 ```
 
 #### **3. Submit Pull Request**
+
 ```bash
 # Push to your fork
 git push origin feature/your-feature-name
@@ -699,6 +752,7 @@ git push origin feature/your-feature-name
 ### **Code Standards**
 
 #### **TypeScript/JavaScript**
+
 ```typescript
 // Use TypeScript for type safety
 interface User {
@@ -719,6 +773,7 @@ const isAuthenticated = Boolean(accessToken);
 ```
 
 #### **Python**
+
 ```python
 # Use type hints
 def create_user(user_data: UserCreate) -> UserResponse:
@@ -732,11 +787,11 @@ def create_user(user_data: UserCreate) -> UserResponse:
 def authenticate_user(email: str, password: str) -> Optional[User]:
     """
     Authenticate user with email and password.
-    
+
     Args:
         email: User's email address
         password: User's password
-        
+
     Returns:
         User object if authentication successful, None otherwise
     """
@@ -764,6 +819,7 @@ chore(deps): update dependencies to latest versions
 ### **Review Process**
 
 #### **Before Submitting PR**
+
 - [ ] Code follows project standards
 - [ ] All tests pass
 - [ ] Documentation updated
@@ -772,6 +828,7 @@ chore(deps): update dependencies to latest versions
 - [ ] API endpoints tested
 
 #### **PR Checklist**
+
 - [ ] Clear description of changes
 - [ ] Screenshots (if UI changes)
 - [ ] Test cases included
@@ -780,6 +837,6 @@ chore(deps): update dependencies to latest versions
 
 ---
 
-**Last Updated:** December 2024  
-**Version:** 1.0.0  
-**Maintainer:** Development Team 
+**Last Updated:** December 2024
+**Version:** 1.0.0
+**Maintainer:** Development Team
