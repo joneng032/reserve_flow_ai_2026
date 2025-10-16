@@ -151,6 +151,31 @@ class FakeQuery:
         return self
 
     def range(self, *_a, **_kw):
+        # Record requested range for later slicing in execute().
+        # Supabase uses inclusive end: range(start, end) returns start..end inclusive.
+        try:
+            if len(_a) >= 2:
+                start, end = _a[0], _a[1]
+            elif len(_a) == 1:
+                start, end = _a[0], None
+            else:
+                start = _kw.get("start")
+                end = _kw.get("end")
+            if start is None:
+                self._range = None
+            else:
+                # coerce to ints when possible
+                try:
+                    s = int(start)
+                except Exception:
+                    s = 0
+                try:
+                    e = int(end) if end is not None else None
+                except Exception:
+                    e = None
+                self._range = (s, e)
+        except Exception:
+            self._range = None
         return self
 
     def insert(self, data):
@@ -212,8 +237,20 @@ class FakeQuery:
 
     def execute(self):
         # ensure existing rows have minimal defaults for model construction
+        data_rows = list(self._data or [])
+        # Apply range slicing if requested. Supabase range is inclusive on end.
+        if getattr(self, "_range", None):
+            s, e = self._range
+            if e is None:
+                sliced = data_rows[s:]
+            else:
+                # inclusive end -> slice to e+1
+                sliced = data_rows[s : (e + 1)]
+        else:
+            sliced = data_rows
+
         normalized = []
-        for row in (self._data or []):
+        for row in sliced:
             if not isinstance(row, dict):
                 normalized.append(row)
                 continue
