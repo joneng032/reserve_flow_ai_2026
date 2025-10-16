@@ -4,10 +4,12 @@ from backend.database import Database
 def test_create_meeting_mock_mode_returns_stub():
     from backend.models import MeetingCreate
     from backend.tests.conftest import uuid4_str
+    from backend.tests.conftest import FakeClient
 
     db = Database()
-    db.client = None
     pid = uuid4_str()
+    client = FakeClient(table_data={"projects": [{"id": pid, "profile_id": "profile-1"}], "meetings": []})
+    db.client = client
 
     m = MeetingCreate(project_id=pid, title="Standup", meeting_date="2024-01-01T09:00:00Z", meeting_type="regular")
     created = db.create_meeting(m, profile_id="profile-1")

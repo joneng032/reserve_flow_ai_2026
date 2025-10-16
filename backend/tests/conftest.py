@@ -92,6 +92,61 @@ class FakeQuery:
             pass
         return self
 
+    def contains(self, *_a, **_kw):
+        # Basic emulation of Supabase `contains` used for tags filtering.
+        # Usage in tests: .contains('tags', [{'tag': {'name': 'water'}}])
+        try:
+            if len(_a) >= 2:
+                col, val = _a[0], _a[1]
+            elif len(_a) == 1 and "value" in _kw:
+                col, val = _a[0], _kw["value"]
+            else:
+                return self
+
+            if col == "tags":
+                filtered = []
+                for row in (self._data or []):
+                    tags = row.get("tags") or []
+                    match_any = False
+                    for want in (val or []):
+                        # want is like {'tag': {'name': 'water'}}
+                        want_tag = want.get("tag") if isinstance(want, dict) else None
+                        if not want_tag:
+                            continue
+                        for t in tags:
+                            tag_obj = t.get("tag") if isinstance(t, dict) else None
+                            if not tag_obj:
+                                continue
+                            ok = True
+                            for k, v in want_tag.items():
+                                if str(tag_obj.get(k)) != str(v):
+                                    ok = False
+                                    break
+                            if ok:
+                                match_any = True
+                                break
+                        if match_any:
+                            break
+                    if match_any:
+                        filtered.append(row)
+                self._data = filtered
+                return self
+
+            # Generic fallback: do a simple membership check
+            def match(row):
+                try:
+                    value = row.get(col)
+                    if isinstance(value, (list, tuple)):
+                        return any(str(x) == str(v) for x in value for v in (val if isinstance(val, (list, tuple)) else [val]))
+                    return str(value) == str(val)
+                except Exception:
+                    return False
+
+            self._data = [r for r in (self._data or []) if match(r)]
+        except Exception:
+            pass
+        return self
+
     def order(self, *_a, **_kw):
         return self
 
@@ -111,9 +166,12 @@ class FakeQuery:
         if self._table == "interviews":
             row.setdefault("interview_type", "mock")
             row.setdefault("project_id", row.get("project_id", "mock-project"))
+        if self._table == "meetings":
+            row.setdefault("meeting_date", "2024-01-01T00:00:00Z")
+            row.setdefault("meeting_type", row.get("meeting_type", "mock"))
         if self._table == "components":
             row.setdefault("name", row.get("name", "Unnamed Component"))
-            row.setdefault("category", row.get("category", None))
+            row.setdefault("category", row.get("category", "Uncategorized"))
             row.setdefault("base_cost", row.get("base_cost", 0))
             row.setdefault("useful_life", row.get("useful_life", None))
         if self._table == "inspection_items":
@@ -163,6 +221,7 @@ class FakeQuery:
             # set sensible defaults based on table
             if self._table == "media_files":
                 r.setdefault("file_path", "mock/path.jpg")
+                r.setdefault("file_name", r.get("file_name", "mock-file.jpg"))
                 r.setdefault("file_type", "image")
                 r.setdefault("mime_type", "image/jpeg")
                 r.setdefault("file_size", 0)
@@ -170,6 +229,15 @@ class FakeQuery:
             if self._table == "interviews":
                 r.setdefault("interview_type", "mock")
                 r.setdefault("project_id", r.get("project_id", "mock-project"))
+            if self._table == "components":
+                r.setdefault("name", r.get("name", "Unnamed Component"))
+                r.setdefault("category", r.get("category", "Uncategorized"))
+                r.setdefault("base_cost", r.get("base_cost", 0))
+                r.setdefault("useful_life", r.get("useful_life", None))
+            if self._table == "meetings":
+                # meeting_date and meeting_type are required by Meeting model
+                r.setdefault("meeting_date", "2024-01-01T00:00:00Z")
+                r.setdefault("meeting_type", r.get("meeting_type", "mock"))
             if self._table == "components":
                 r.setdefault("name", r.get("name", "Unnamed Component"))
                 r.setdefault("category", r.get("category", None))
@@ -211,6 +279,12 @@ import pytest
 _repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if _repo_root not in sys.path:
     sys.path.insert(0, _repo_root)
+# Also ensure the `backend` package directory is importable as a top-level package
+# Some unit tests import `app.*` (which lives under backend/app). Adding the
+# backend directory to sys.path makes `import app` resolve to backend/app.
+_backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _backend_dir not in sys.path:
+    sys.path.insert(0, _backend_dir)
 
 # Default to the simple pure-Python JWT implementation for local test runs
 # to avoid importing heavy native crypto backends during test collection.

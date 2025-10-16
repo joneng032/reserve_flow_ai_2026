@@ -48,7 +48,9 @@ def test_evidence_crud_and_audit(monkeypatch):
     got = db.get_evidence(eid, "profile-1")
     assert got is not None
 
-    eu = EvidenceUpdate(file_name="new.mp4")
+    from backend.models import EvidenceUpdate
+
+    eu = EvidenceUpdate(evidence_type="video", file_name="new.mp4")
     updated = db.update_evidence(eid, eu, profile_id="profile-1")
     assert updated is not None
     assert called.get("ok")
