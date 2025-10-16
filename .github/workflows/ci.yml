@@ -100,7 +100,7 @@ jobs:
 
       - name: Run frontend tests with coverage
         env:
-          FRONTEND_COVERAGE_THRESHOLD: 80
+          FRONTEND_COVERAGE_THRESHOLD: 85
         run: |
           cd frontend
           # Prefer running package.json test script and pass coverage flag
