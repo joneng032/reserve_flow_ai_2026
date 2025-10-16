@@ -39,3 +39,20 @@ ENV/
 Thumbs.db 
 .vercel
 frontend/package-lock.json
+
+# Generated coverage artifacts
+/backend/coverage.xml
+/backend/htmlcov/
+/frontend/coverage/
+.coverage
+.cache
+
+# Local python virtualenv
+.venv/
+
+# Embedded CodeMachine metadata
+# .codemachine/
+
+# Local secrets (don't commit)
+gh_token.txt
+.env.local
