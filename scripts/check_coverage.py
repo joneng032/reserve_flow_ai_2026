@@ -12,7 +12,11 @@ def compute_coverage(xml_path: Path):
     if not xml_path.exists():
         print(f'Coverage file not found: {xml_path}')
         return 0.0
-    data = xmltodict.parse(xml_path.read_text())
+    try:
+        data = xmltodict.parse(xml_path.read_text())
+    except Exception as e:
+        print(f'Error parsing coverage XML file: {xml_path}\n{e}')
+        return 0.0
     # Navigate to classes -> class -> lines -> line
     cov = data.get('coverage', {})
     packages = cov.get('packages', {}).get('package', [])
