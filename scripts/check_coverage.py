@@ -48,7 +48,14 @@ def main():
         print('Usage: check_coverage.py path/to/coverage.xml [threshold]')
         sys.exit(2)
     xml_path = Path(sys.argv[1])
-    threshold = float(sys.argv[2]) if len(sys.argv) > 2 else 80.0
+    if len(sys.argv) > 2:
+        try:
+            threshold = float(sys.argv[2])
+        except ValueError:
+            print(f'Error: threshold "{sys.argv[2]}" is not a valid number.')
+            sys.exit(2)
+    else:
+        threshold = 80.0
     cov = compute_coverage(xml_path)
     print(f'Backend coverage: {cov:.2f}%')
     if cov < threshold:
