@@ -73,17 +73,24 @@ app = FastAPI(
 )
 
 # Enhanced CORS configuration
+# Configure CORS origins from environment for safer deployments. When DEPLOYMENT
+# is set to "production" the environment should provide a comma-separated
+# list in ALLOWED_ORIGINS. Falling back to sensible localhost defaults for
+# development.
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    allow_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+else:
+    allow_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",  # Vite dev server
-        "http://127.0.0.1:5173",  # Vite dev server (alternative)
-        "http://localhost:3000",  # Backend
-        "http://127.0.0.1:3000",  # Backend (alternative)
-        "https://*.vercel.app",  # Vercel
-        "https://vercel.app",  # Vercel
-        "*",  # Temporary for development - REMOVE IN PRODUCTION
-    ],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
     allow_headers=[
@@ -136,7 +143,9 @@ class ProtectedResponse(BaseModel):
 users_db = {}
 
 # Configuración JWT
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+# Prefer canonical env `JWT_SECRET`. Fall back to legacy `JWT_SECRET_KEY`
+# for backward compatibility to avoid breaking existing setups immediately.
+JWT_SECRET = os.getenv("JWT_SECRET", os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production"))
 JWT_ALGORITHM = "HS256"
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -1130,8 +1139,12 @@ async def get_inspection_item(
     _ = project_id
     _ = inspection_id
     inspection_item = safe_db_call(db.get_inspection_item, item_id, current_user["id"])
-    # For inspection items we normalize the resource name to help the client
-    ensure_belongs_to_project(inspection_item, inspection_id, "Inspection item")
+    # For inspection items we normalize the resource name and ensure the
+    # returned item's project matches the requested project. Pass the
+    # top-level `project_id` (route param) into the ownership check so
+    # we compare the item's project_id against the project requested by
+    # the client.
+    ensure_belongs_to_project(inspection_item, project_id, "Inspection item")
     return inspection_item
 
 
@@ -1170,7 +1183,7 @@ async def delete_inspection_item(
         return {"message": "Inspection item deleted successfully"}
     raise HTTPException(status_code=404, detail="Inspection item not found")
 
-
+    ensure_belongs_to_project(inspection_item, project_id, "Inspection item")
 # ===== EVIDENCE ENDPOINTS =====
 
 

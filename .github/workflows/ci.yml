@@ -2,6 +2,45 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
+      - '**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    name: Lint & Test (backend)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff & test deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+
+      - name: Run ruff
+        run: |
+          ruff check .
+
+      - name: Run pytest
+        run: |
+          pytest -q
+
+  # Optional: add frontend job later to run npm install & vitest
+name: CI
+
+on:
+  push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
