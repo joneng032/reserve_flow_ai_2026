@@ -54,3 +54,4 @@ frontend/package-lock.json
 
 # Local secrets (don't commit)
 gh_token.txt
+.env.local
