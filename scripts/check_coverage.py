@@ -38,9 +38,7 @@ def compute_coverage(xml_path: Path):
                 if ln.get('@hits') and int(ln.get('@hits')) > 0:
                     lines_covered += 1
 
-    if lines_total == 0:
-        return 0.0
-    return (lines_covered / lines_total) * 100.0
+    return 0.0 if lines_total == 0 else (lines_covered / lines_total) * 100.0
 
 
 def main():
