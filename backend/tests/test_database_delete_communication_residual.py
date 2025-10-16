@@ -1,4 +1,120 @@
 import pytest
+
+from backend import database
+from backend.tests.conftest import FakeClient, FakeQuery, uuid4_str
+
+
+def test_delete_communication_client_none():
+    database.db.client = None
+    assert database.db.delete_communication(uuid4_str(), uuid4_str()) is False
+
+
+def test_delete_communication_ownership_negative():
+    database.db.client = FakeClient({"communications": []})
+    assert database.db.delete_communication(uuid4_str(), uuid4_str()) is False
+
+
+def test_delete_communication_success_and_audit(monkeypatch):
+    comm_id = uuid4_str()
+    proj_id = uuid4_str()
+    profile_id = uuid4_str()
+    # communication_check returns a row with project_id and joined project
+    client = FakeClient({
+        "communications": [{"id": comm_id, "project_id": proj_id}],
+        "projects": [{"id": proj_id, "profile_id": profile_id}],
+    })
+    database.db.client = client
+
+    seen = []
+    monkeypatch.setattr(database.db, "create_audit_log", lambda a: seen.append(a))
+
+    result = database.db.delete_communication(comm_id, profile_id)
+    assert result is True
+    assert len(seen) == 1
+
+
+def test_delete_communication_empty_delete_returns_false():
+    comm_id = uuid4_str()
+    proj_id = uuid4_str()
+    profile_id = uuid4_str()
+    client = FakeClient({
+        "communications": [{"id": comm_id, "project_id": proj_id}],
+        "projects": [{"id": proj_id, "profile_id": profile_id}],
+        # simulate a delete that returns no rows
+        "deleted_rows": [],
+    })
+
+    # Override table behavior: communications.delete().eq(...).execute() returns empty
+    class EmptyDeleteQuery(FakeQuery):
+        def delete(self):
+            self._data = []
+            return self
+
+    class EmptyDeleteClient(FakeClient):
+        def table(self, name):
+            if name == "projects":
+                return FakeQuery(data=[{"id": proj_id, "profile_id": profile_id}], table_name="projects", client=self)
+            if name == "communications":
+                return EmptyDeleteQuery(data=[{"id": comm_id, "project_id": proj_id}], table_name=name, client=self)
+            return FakeQuery(data=[], table_name=name, client=self)
+
+    database.db.client = EmptyDeleteClient({})
+    assert database.db.delete_communication(comm_id, profile_id) is False
+
+
+def test_delete_communication_data_error_returns_false():
+    comm_id = uuid4_str()
+    proj_id = uuid4_str()
+    profile_id = uuid4_str()
+
+    class BrokenQuery:
+        def select(self, *a, **kw):
+            return self
+
+        def eq(self, *a, **kw):
+            return self
+
+        def execute(self):
+            raise AttributeError("simulated")
+
+    class BrokenClient(FakeClient):
+        def table(self, name):
+            if name == "projects":
+                return FakeQuery(data=[{"id": proj_id, "profile_id": profile_id}], table_name="projects", client=self)
+            return BrokenQuery()
+
+    database.db.client = BrokenClient({})
+    assert database.db.delete_communication(comm_id, profile_id) is False
+
+
+def test_delete_communication_unexpected_exception_raises_database_error():
+    comm_id = uuid4_str()
+    proj_id = uuid4_str()
+    profile_id = uuid4_str()
+
+    class ExplodingQuery:
+        def select(self, *a, **kw):
+            return self
+
+        def eq(self, *a, **kw):
+            return self
+
+        def delete(self):
+            return self
+
+        def execute(self):
+            raise Exception("boom")
+
+    class ExplodingClient(FakeClient):
+        def table(self, name):
+            if name == "projects":
+                return FakeQuery(data=[{"id": proj_id, "profile_id": profile_id}], table_name="projects", client=self)
+            return ExplodingQuery()
+
+    database.db.client = ExplodingClient({})
+    with pytest.raises(database.DatabaseError):
+        database.db.delete_communication(comm_id, profile_id)
+import pytest
 from backend import database
 from backend.tests.conftest import FakeClient, FakeQuery, uuid4_str
 from backend.models import AuditLogCreate
