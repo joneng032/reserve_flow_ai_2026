@@ -1,10 +1,61 @@
 import pytest
 from backend import database
+
+
+def test_get_project_inspections_client_none(monkeypatch):
+    # when db client is None (mock mode) should return empty list
+    monkeypatch.setattr(database, "db", None)
+
+    res = database.get_project_inspections(project_id="proj_1")
+    assert isinstance(res, list)
+    assert res == []
+
+
+def test_get_project_inspections_ownership_negative(monkeypatch):
+    # fake client that returns inspections with non-matching owner/project
+    class FakeQuery:
+        def __init__(self):
+            self._rows = [{"id": "i1", "project_id": "other", "owner": "x"}]
+
+        def select(self, *args, **kwargs):
+            return self
+
+        def eq(self, *args, **kwargs):
+            return self
+
+        def order(self, *args, **kwargs):
+            return self
+
+        def range(self, *args, **kwargs):
+            return self
+
+        def execute(self):
+            return type("R", (), {"data": self._rows})()
+
+    class FakeClient:
+        def table(self, name):
+            return FakeQuery()
+
+    monkeypatch.setattr(database, "db", FakeClient())
+
+    res = database.get_project_inspections(project_id="proj_1")
+    # Should filter out since project_id doesn't match
+    assert res == []
+import pytest
+from backend import database
 from backend.tests.conftest import FakeClient, FakeQuery, uuid4_str
 from backend.models import Inspection
 
 
+def test_get_project_inspections_client_none():
+    # Mock-mode: no real client -> return empty list
+    database.db.client = None
+    res = database.db.get_project_inspections(uuid4_str(), uuid4_str())
+    assert res == []
+
+
 def test_get_project_inspections_ownership_negative():
+    # No project owned by profile -> empty
     database.db.client = FakeClient({"projects": []})
     res = database.db.get_project_inspections(uuid4_str(), uuid4_str())
     assert res == []
@@ -38,7 +89,7 @@ def test_get_project_inspections_with_filters_and_pagination():
     res = database.db.get_project_inspections(proj_id, profile_id, inspection_type="site")
     assert len(res) == 5
 
-    # pagination: call with skip/limit (FakeClient doesn't strictly slice results), ensure it returns a list
+    # pagination: call with skip/limit (FakeClient may not strictly slice results), ensure it returns a list
     res2 = database.db.get_project_inspections(proj_id, profile_id, skip=2, limit=2)
     assert isinstance(res2, list)
     assert len(res2) <= len(rows)
@@ -51,12 +102,6 @@ def test_get_project_inspections_data_error_returns_empty():
             return self
 
         def eq(self, *a, **kw):
-            return self
-
-        def order(self, *a, **kw):
-            return self
-
-        def range(self, *a, **kw):
             return self
 
         def execute(self):
@@ -196,4 +241,3 @@ def test_get_project_inspections_exercise_all_paths():
     database.db.client = ExplodingClient2({})
     with pytest.raises(database.DatabaseError):
         database.db.get_project_inspections(proj_id, profile_id)
-
